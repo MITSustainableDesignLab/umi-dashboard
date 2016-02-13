@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<!-- saved from url=(0065)http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="MIT Sustainable Design Lab">
+    <link rel="icon" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/ico/favicon.ico">
+
+    <title>UMI Dashboard</title>
+
+    <link href="./UMI Dashboard_files/bootstrap.min.css" rel="stylesheet">
+    <link href="./UMI Dashboard_files/dashboard.css" rel="stylesheet">
+
+    <link href="./UMI Dashboard_files/custom.css" rel="stylesheet">
+
+  </head>
+
+  <body class="">
+
+
+    <!-- Intro Modal -->
+    <div class="modal fade" id="introModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog">
+
+        <div id="introModalContent" class="modal-content">
+          <div class="modal-header">
+
+            <img src="./UMI Dashboard_files/UMI.png" width="300px" height="auto" style="margin-bottom:20px;">
+            <div style="width:100%;text-align:center;"><img src="./UMI Dashboard_files/UMI.png" width="245px" height="auto"></div>
+            
+          </div>
+          <div class="modal-body" id="mBody_compliance">
+            <h2>Hello World!</h2>
+            <p>Welcome to UMI Dashboard, a prototypical energy simulation results viewer based on our Rhino-integrated Urban Modeling Interface [UMI]. UMI Dashboard is a web-powered service that allows quick, beautiful and interactive visualizations of simulation results stored in UMI files. Launch an example file with the MIT Model Data, or load your own project to get started.
+          </p></div>
+
+          <div class="modal-footer">
+
+            <div class="row">
+              <button id="loadExample" class="btn btn-primary btn-lg">Launch Example</button>
+              <button id="loadFromFile" class="btn btn-primary btn-lg" type="button">Load Project From File</button>
+
+              <!-- <input type="file" id="zipinput"> -->
+              <!-- <input type="file" id="zipinput"> -->
+
+            </div>
+            
+            <div class="row">
+              <div class="file-upload-info">Projects loaded from file are never uploaded or stored on a server or in a database. Files are simply accessed from your computer for the simulation.</div>
+              <!-- <input id="files" type="file"  name="files[]" multiple /> -->
+              <input id="zipinput_test" type="file" name="files[]" multiple="">
+            </div>
+
+            <div id="result"></div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modal Compliance-->
+    <div class="modal fade" id="ModalCompliance" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="mTitle_Compliance">Set Compliance Levels</h4>
+          </div>
+          <div class="modal-body" id="mBody_compliance">
+            <form id="form" role="form">
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button id="submit_comp" type="button" class="btn btn-default">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a id="prname" class="navbar-brand"><b>MIT Campus</b> | Example Data - Central Square, Cambridge MA</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><button id="changeFile" class="btn btn-primary navbar-btn">Change File</button></li>
+            <li><a data-toggle="dropdown" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Browse</a>
+              <ul id="dropdown" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu3"><li id="t0" role="presentation" class="dropdown-header">Recreation</li><li id="102" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W11</a></li><li id="90" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E33</a></li><li id="80" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W53</a></li><li id="78" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W35</a></li><li id="73" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W34</a></li><li id="49" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W15</a></li><li id="35" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W31</a></li><li id="27" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W33</a></li><li id="25" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W20</a></li><li id="19" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">57</a></li><li id="0" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W32</a></li><li id="d0" role="presentation" class="divider"></li><li id="t1" role="presentation" class="dropdown-header">Academic</li><li id="110" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">50</a></li><li id="109" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W1</a></li><li id="105" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">32</a></li><li id="95" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">34</a></li><li id="92" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">10</a></li><li id="91" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">33</a></li><li id="88" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">12</a></li><li id="87" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E15</a></li><li id="86" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">54</a></li><li id="85" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E60</a></li><li id="82" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">9</a></li><li id="77" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E14</a></li><li id="74" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">1</a></li><li id="69" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">14</a></li><li id="68" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">N51</a></li><li id="62" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W2_W4</a></li><li id="60" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">N52</a></li><li id="57" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">18</a></li><li id="56" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">2</a></li><li id="54" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">38</a></li><li id="53" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">8</a></li><li id="50" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">6</a></li><li id="47" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W98</a></li><li id="46" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">3</a></li><li id="45" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E51</a></li><li id="42" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E34</a></li><li id="40" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E40</a></li><li id="39" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">24</a></li><li id="38" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E38</a></li><li id="34" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">66</a></li><li id="32" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E53</a></li><li id="31" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W89</a></li><li id="29" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E62</a></li><li id="28" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">11</a></li><li id="24" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W59</a></li><li id="20" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">7</a></li><li id="18" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W16</a></li><li id="16" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E52</a></li><li id="14" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">36</a></li><li id="8" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">4</a></li><li id="7" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">5</a></li><li id="5" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">35</a></li><li id="2" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E19</a></li><li id="1" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E23</a></li><li id="d1" role="presentation" class="divider"></li><li id="t2" role="presentation" class="dropdown-header">Labs</li><li id="111" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">31</a></li><li id="108" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">NW12</a></li><li id="107" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">17</a></li><li id="104" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">26</a></li><li id="103" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">37</a></li><li id="101" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">NW17</a></li><li id="96" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">NW15</a></li><li id="94" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">13</a></li><li id="84" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">NW14</a></li><li id="81" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">68</a></li><li id="72" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">NW22</a></li><li id="67" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E18</a></li><li id="65" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E25</a></li><li id="64" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">76</a></li><li id="63" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">44</a></li><li id="61" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">48</a></li><li id="59" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">41</a></li><li id="55" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">NW16</a></li><li id="52" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">39</a></li><li id="51" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">NW21</a></li><li id="48" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">N9</a></li><li id="41" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">NW13</a></li><li id="22" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">N10</a></li><li id="21" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">16</a></li><li id="17" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">46</a></li><li id="13" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E17</a></li><li id="3" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">56</a></li><li id="d2" role="presentation" class="divider"></li><li id="t3" role="presentation" class="dropdown-header">Service</li><li id="89" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W91</a></li><li id="75" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">N4</a></li><li id="71" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W45</a></li><li id="26" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">N57</a></li><li id="10" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W92</a></li><li id="4" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">WW15</a></li><li id="d3" role="presentation" class="divider"></li><li id="t4" role="presentation" class="dropdown-header">Dorms</li><li id="112" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">62</a></li><li id="106" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">NW35</a></li><li id="100" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">NW10</a></li><li id="99" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W51</a></li><li id="98" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W13</a></li><li id="97" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W84</a></li><li id="93" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W85FG</a></li><li id="83" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W85HJK</a></li><li id="79" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W61</a></li><li id="76" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W85ABC</a></li><li id="70" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W85DE</a></li><li id="66" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W7</a></li><li id="58" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">NW30</a></li><li id="44" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W71</a></li><li id="43" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">64</a></li><li id="37" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E55</a></li><li id="36" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">NW61</a></li><li id="33" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E2</a></li><li id="30" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W85</a></li><li id="23" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">E1</a></li><li id="15" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W70</a></li><li id="12" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W5</a></li><li id="11" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W51C</a></li><li id="9" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">W79</a></li><li id="6" role="presentation"><a role="menuitem" tabindex="-1" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">NW86</a></li></ul>
+            </li>
+            <li><button type="button" class="btn btn-special navbar-btn" id="home_bt">Home</button></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <!--<input id="bldinput" type="text" class="form-control-special" placeholder="Building Name Search" onkeypress="handle(event)"></input>-->
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <button onclick="myFunction()">Try it</button>
+          <p id="demo"></p>
+          <ul class="nav nav-sidebar">
+            <img class="center-block" src="./UMI Dashboard_files/UMI.png" alt="UMI" width="auto" height="140px">
+          </ul>
+          <ul class="nav nav-sidebar">
+            <div class="panel-group" id="accordion">
+              <div id="menu_1" class="panel panel-default">
+                <div class="panel-heading">
+                  <li>
+                    <a id="menu_1_title" data-toggle="collapse" data-parent="#accordion" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#collapseOne">Building Information</a>
+                  </li>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <h5><small id="menu_1_content"><li>Name: 18</li><li>Applied Use Type: Academic</li><li>Applied Template: 18-Bldg</li><li>Area: 9,950 sqm</li><li>WWR North: 0.1</li><li>WWR South: 0.7</li><li>WWR East: 0.3</li><li>WWR West: 0.3</li></small></h5>
+                  </div>
+                </div>
+              </div>
+              <div id="menu_compliance" class="hidden panel panel-default">
+                <div class="panel-heading">
+                  <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#collapseCompliance">
+                      Compliance Information
+                    </a>
+                  </li>
+                </div>
+                <div id="collapseCompliance" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <h5><small id="menu_compliance_content"></small></h5>
+                  </div>
+                </div>
+              </div>
+              <div id="menu_begin" class="panel panel-default hidden">
+                <div class="panel-heading">
+                  <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#collapseBegin">
+                      Chart Type
+                    </a>
+                  </li>
+                </div>
+                <div id="collapseBegin" class="panel-collapse collapse" style="height: 0px;">
+                  <div class="panel-body">
+                    <div id="button_group" class="btn-group-vertical btn-block" data-toggle="buttons">
+                      <label class="btn btn-default active" id="bld_col_bt" href="#">
+                        <input type="radio" class="btn btn-default" checked="">Building Columns
+                      </label>
+                      <label class="btn btn-default" id="temp_col_bt" href="#">
+                        <input type="radio" class="btn btn-default">Use Type Columns
+                      </label>
+                      <label class="btn btn-default" id="scatter_bt" href="#">
+                        <input type="radio" class="btn btn-default">Scatter Plot
+                      </label>
+                      <label class="btn btn-default" id="bld_map_bt" href="#">
+                        <input type="radio" class="btn btn-default">Building Map
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="menu_modes" class="panel panel-default hidden">
+                <div class="panel-heading">
+                  <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#collapseModes">
+                      Compliance Mode
+                    </a>
+                  </li>
+                </div>
+                <div id="collapseModes" class="panel-collapse collapse" style="height: 0px;">
+                  <div class="panel-body">
+                    <div class="btn-group btn-group-justified" data-toggle="buttons">
+                      <label class="btn btn-default active" id="mode_view">
+                        <input type="radio" name="options" checked=""> Off
+                      </label>
+                      <label class="btn btn-default" id="mode_comp" type="button" href="#" data-toggle="modal" data-target="#ModalCompliance">
+                        <input type="radio" name="options"> On
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="menu_0" class="hidden panel panel-default">
+                <div class="panel-heading">
+                  <li>
+                    <a id="menu_0_title" data-toggle="collapse" data-parent="#accordion" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#collapseZero">
+                      Scatter Plot Options
+                    </a>
+                  </li>
+                </div>
+                <div id="collapseZero" class="panel-collapse collapse" style="height: 0px;">
+                  <div class="panel-body">
+                    <div id="button_group" class="btn-group-vertical btn-block">
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                          X Axis
+                          <span class="caret"></span><a id="x-axis"> Area</a>
+                        </button>
+                        <ul class="dropdown-menu" role="menu"> 
+                          <li role="presentation" class="dropdown-header">Geometry</li>
+                          <li><a id="x-area" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Area</a></li>              
+                          <li><a id="x-wwr" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">WWR</a></li>
+                          <li role="presentation" class="divider" id="x-oe_divider"></li>
+                          <li role="presentation" class="dropdown-header" id="x-oe_title">Energy</li>
+                          <li><a id="x-oe" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Consumption</a></li>
+                          <li><a id="x-oe_norm" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Normalized Consumption</a></li>
+                          <li role="presentation" class="divider" id="x-mo_divider"></li>
+                          <li role="presentation" class="dropdown-header" id="x-mo_title">Mobility</li>
+                          <li><a id="x-mo_walk" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Walkscore</a></li>
+                          <li><a id="x-mo_bike" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Bikescore</a></li>
+                          <li role="presentation" class="divider" id="x-da_divider"></li>
+                          <li role="presentation" class="dropdown-header" id="x-da_title">Daylight</li>
+                          <li><a id="x-da" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Autonomy</a></li>
+                          <li role="presentation" class="divider" id="x-lc_divider"></li>
+                          <li role="presentation" class="dropdown-header" id="x-lc_title">Lifecycle</li>
+                          <li><a id="x-lc_energy" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Energy</a></li>
+                          <li><a id="x-lc_carbon" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Carbon</a></li>
+                        </ul>
+                      </div>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                          Y Axis
+                          <span class="caret"></span><a id="y-axis"> OE</a>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                          <li role="presentation" class="dropdown-header">Geometry</li>
+                          <li><a id="y-area" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Area</a></li>
+                          <li><a id="y-wwr" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">WWR</a></li>
+                          <li role="presentation" class="divider" id="y-oe_divider"></li>
+                          <li role="presentation" class="dropdown-header" id="y-oe_title">Energy</li>
+                          <li><a id="y-oe" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Consumption</a></li>
+                          <li><a id="y-oe_norm" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Normalized Consumption</a></li>
+                          <li role="presentation" class="divider" id="y-mo_divider"></li>
+                          <li role="presentation" class="dropdown-header" id="y-mo_title">Mobility</li>
+                          <li><a id="y-mo_walk" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Walkscore</a></li>
+                          <li><a id="y-mo_bike" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Bikescore</a></li>
+                          <li role="presentation" class="divider" id="y-da_divider"></li>
+                          <li role="presentation" class="dropdown-header" id="y-da_title">Daylight</li>
+                          <li><a id="y-da" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Daylight Autonomy</a></li>
+                          <li role="presentation" class="divider" id="y-lc_divider"></li>
+                          <li role="presentation" class="dropdown-header" id="y-lc_title">Lifecycle</li>
+                          <li><a id="y-lc_energy" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Energy</a></li>
+                          <li><a id="y-lc_carbon" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Carbon</a></li>
+                        </ul>
+                      </div>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                          Grouping
+                          <span class="caret"></span><a id="type"> Bld</a>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a id="type-buildings" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Buildings</a></li>
+                          <li><a id="type-templates" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Use Types</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="menu_2" class="panel panel-default hidden">
+                <div class="panel-heading">
+                  <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#collapseTwo">
+                      Building Column Options
+                    </a>
+                  </li>
+                </div>
+                <div id="collapseTwo" class="panel-collapse collapse" style="height: 0px;">
+                  <div class="panel-body">
+                    <div class="btn-group-vertical btn-block">
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                          Sort
+                          <span class="caret"></span><a id="sort"></a>
+                        </button>
+                        <ul class="dropdown-menu" role="menu"> 
+                          <li><a id="sort_asc" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Ascending</a></li>              
+                          <li><a id="sort_dec" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Descending</a></li>
+                          <li><a id="sort_reset" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Reset</a></li>
+                        </ul>
+                      </div>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                          Y Axis
+                          <span class="caret"></span><a id="y-axis-0"> OE</a>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a id="norm_off" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Consumption</a></li>
+                          <li><a id="norm_area" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Normalized Consumption</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="menu_2b" class="hidden panel panel-default">
+                <div class="panel-heading">
+                  <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#collapseTwoB">
+                      Building Column Options
+                    </a>
+                  </li>
+                </div>
+                <div id="collapseTwoB" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <div class="btn-group-vertical btn-block">
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                          Sort
+                          <span class="caret"></span><a id="sort_b"></a>
+                        </button>
+                        <ul class="dropdown-menu" role="menu"> 
+                          <li><a id="sort_asc_b" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Ascending</a></li>              
+                          <li><a id="sort_dec_b" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Descending</a></li>
+                          <li><a id="sort_reset_b" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Reset</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="menu_3" class="panel panel-default hidden">
+                <div class="panel-heading">
+                  <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#collapseThree">
+                      Definition
+                    </a>
+                  </li>
+                </div>
+              </div>
+              <div id="menu_5" class="hidden panel panel-default">
+                <div class="panel-heading">
+                  <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#collapseFive">
+                      Normalization
+                    </a>
+                  </li>
+                </div>
+                <div id="collapseFive" class="panel-collapse collapse" style="height: 0px;">
+                  <div class="panel-body">
+                    <li><a id="norm_bd_area" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">By Area</a></li>
+                    <li><a id="norm_bd_off" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Reset</a></li>
+                  </div>
+                </div>
+              </div>
+              <div id="menu_6" class="hidden panel panel-default">
+                <div class="panel-heading">
+                  <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#collapseSix">
+                      Scale
+                    </a>
+                  </li>
+                </div>
+                <div id="collapseSix" class="panel-collapse collapse" style="height: 0px;">
+                  <div class="panel-body">
+                    <li><input id="sclinput" type="text" class="form-control" placeholder="Set Maximum Y" onkeypress="handle(event)"></li>
+                  </div>
+                </div>
+              </div>
+              <div id="menu_7" class="hidden panel panel-default">
+                <div class="panel-heading">
+                 <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#collapseSeven">
+                      Use Type Column Options
+                    </a>
+                  </li>
+                </div>
+                <div id="collapseSeven" class="panel-collapse collapse" style="height: 0px;">
+                  <div class="panel-body">
+                    <div class="btn-group-vertical btn-block">
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                          Y Axis 
+                          <span class="caret"></span><a id="y-axis-2"> OE</a>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a id="y-oe-2" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Consumption</a></li>
+                          <li><a id="y-oe_norm-2" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Normalized Consumption</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="menu_8" class="hidden panel panel-default">
+                <div class="panel-heading">
+                 <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#collapseEight">
+                      Show
+                    </a>
+                  </li>
+                </div>
+                <div id="collapseEight" class="panel-collapse collapse" style="height: 0px;">
+                  <div class="panel-body">
+                    <li><a id="walkscore" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Walk</a></li>
+                    <li><a id="bikescore" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Bike</a></li>
+                  </div>
+                </div>
+              </div>
+              <div id="menu_9" class="hidden panel panel-default">
+                <div class="panel-heading">
+                 <li>
+                    <a data-toggle="collapse" data-parent="#accordion" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#collapseNine">
+                      Show
+                    </a>
+                  </li>
+                </div>
+                <div id="collapseNine" class="panel-collapse collapse" style="height: 0px;">
+                  <div class="panel-body">
+                    <li><a id="lc_energy" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Energy</a></li>
+                    <li><a id="lc_carbon" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/UMI_D-file=project.json.html#">Carbon</a></li>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <ol id="bread" class="breadcrumb">
+            
+            
+          <li><a onclick="Start_Chart1()" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">All Building Columns</a></li><li><a onclick="building_overview()" href="http://web.mit.edu/sustainabledesignlab/projects/Umi_D/index.html#">18</a></li><li class="active">Overview</li></ol>
+          <h3 id="bldname" class="page-header">18<font color="#d1d1d1"> | Overview</font></h3>
+          <div class="container-fluid" id="container" style="width:100%; height:490px;" data-highcharts-chart="1"><div class="highcharts-container" id="highcharts-6" style="position: relative; overflow: hidden; width: 635px; height: 490px; text-align: left; line-height: normal; z-index: 0; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); font-family: arial;"><svg version="1.1" style="font-family:arial;font-size:12px;" xmlns="http://www.w3.org/2000/svg" width="635" height="490"><desc>Created with Highcharts 4.1.6</desc><defs><clippath id="highcharts-7"><rect x="0" y="0" width="615" height="416"></rect></clippath></defs><rect x="0" y="0" width="635" height="490" strokeWidth="0" fill="#FFFFFF" class=" highcharts-background"></rect><g class="highcharts-button" style="cursor:default;" stroke-linecap="round" transform="translate(601,10)"><title>Chart context menu</title><rect x="0.5" y="0.5" width="24" height="22" strokeWidth="1" fill="white" stroke="none" stroke-width="1" rx="2" ry="2"></rect><path fill="#E0E0E0" d="M 6 6.5 L 20 6.5 M 6 11.5 L 20 11.5 M 6 16.5 L 20 16.5" stroke="#666" stroke-width="3" zIndex="1"></path><text x="0" zIndex="1" style="color:black;fill:black;" y="12"></text></g><g class="highcharts-grid" zIndex="1"><path fill="none" d="M 317.5 267 L 317.5 90.19999999999999" stroke="#DCDCDC" stroke-width="1" zIndex="1" opacity="1"></path><path fill="none" d="M 317.5 267 L 494.3 267" stroke="#DCDCDC" stroke-width="1" zIndex="1" opacity="1"></path><path fill="none" d="M 317.5 267 L 317.5 443.8" stroke="#DCDCDC" stroke-width="1" zIndex="1" opacity="1"></path><path fill="none" d="M 317.5 267 L 140.7 267" stroke="#DCDCDC" stroke-width="1" zIndex="1" opacity="1"></path><path fill="none" d="M 317.5 267 L 317.49999999999994 90.19999999999999" stroke="#DCDCDC" stroke-width="1" zIndex="1" opacity="1"></path></g><g class="highcharts-grid" zIndex="1"><path fill="none" d="M 317.5 267 L 317.5 267 L 317.5 267 L 317.5 267 L 317.5 267 L 317.5 267" stroke="#DCDCDC" stroke-width="1" zIndex="1" opacity="1"></path><path fill="none" d="M 317.5 178.6 L 317.5 178.6 L 229.1 267 L 317.5 355.4 L 405.9 267 L 317.5 178.6" stroke="#DCDCDC" stroke-width="1" zIndex="1" opacity="1"></path><path fill="none" d="M 317.5 90.19999999999999 L 317.49999999999994 90.19999999999999 L 140.7 267 L 317.5 443.8 L 494.3 267 L 317.5 90.19999999999999" stroke="#DCDCDC" stroke-width="1" zIndex="1" opacity="1"></path></g><g class="highcharts-axis" zIndex="2"></g><g class="highcharts-axis" zIndex="2"></g><g class="highcharts-series-group" zIndex="3"><path fill="rgba(0,169,157,0.25)" d="M 384.68399999999997 257 C 398.00399999999996 257 398.00399999999996 277 384.68399999999997 277 C 371.364 277 371.364 257 384.68399999999997 257 Z"></path><path fill="rgba(237,30,121,0.25)" d="M 379.38 257 C 392.7 257 392.7 277 379.38 277 C 366.06 277 366.06 257 379.38 257 Z"></path><g class="highcharts-series" visibility="visible" zIndex="0.1" transform="translate(10,59) scale(1 1)" clip-path="url(#highcharts-7)"><path fill="rgba(0,169,157,0.75)" d="M 307.5 199.15999999999997 L 374.68399999999997 208 L 307.5 273.416 L 130.7 208 L 307.5 199.15999999999997 L 307.5 208" zIndex="0"></path><path fill="none" d="M 307.5 199.15999999999997 L 374.68399999999997 208 L 307.5 273.416 L 130.7 208 L 307.5 199.15999999999997" stroke="#00A99D" stroke-width="3" zIndex="1" stroke-linejoin="round" stroke-linecap="round"></path><path fill="none" d="M 297.5 199.15999999999997 L 307.5 199.15999999999997 L 374.68399999999997 208 L 307.5 273.416 L 130.7 208 L 307.5 199.15999999999997 L 317.5 199.15999999999997" stroke-linejoin="round" visibility="visible" stroke="rgba(192,192,192,0.0001)" stroke-width="22" zIndex="2" class=" highcharts-tracker" style="cursor:pointer;"></path></g><g class="highcharts-markers highcharts-tracker" visibility="visible" zIndex="0.1" transform="translate(10,59) scale(1 1)" style="cursor:pointer;" clip-path="none"><path fill="#00A99D" d="M 130.7 204 C 136.028 204 136.028 212 130.7 212 C 125.37199999999999 212 125.37199999999999 204 130.7 204 Z" stroke-width="1"></path><path fill="#00A99D" d="M 307.5 269.416 C 312.828 269.416 312.828 277.416 307.5 277.416 C 302.172 277.416 302.172 269.416 307.5 269.416 Z" stroke-width="1"></path><path fill="#00A99D" d="M 374.68399999999997 202 C 382.676 202 382.676 214 374.68399999999997 214 C 366.69199999999995 214 366.69199999999995 202 374.68399999999997 202 Z" stroke-width="1" stroke="#FFFFFF"></path><path fill="#00A99D" d="M 307.5 195.15999999999997 C 312.828 195.15999999999997 312.828 203.15999999999997 307.5 203.15999999999997 C 302.172 203.15999999999997 302.172 195.15999999999997 307.5 195.15999999999997 Z" stroke-width="1"></path></g><g class="highcharts-series" visibility="visible" zIndex="0.1" transform="translate(10,59) scale(1 1)" clip-path="url(#highcharts-7)"><path fill="rgba(237,30,121,0.75)" d="M 307.5 190.32 L 369.38 208 L 307.5 266.344 L 280.98 208 L 307.5 190.32 L 307.5 208" zIndex="0"></path><path fill="none" d="M 307.5 190.32 L 369.38 208 L 307.5 266.344 L 280.98 208 L 307.5 190.32" stroke="#ED1E79" stroke-width="2" zIndex="1" stroke-linejoin="round" stroke-linecap="round"></path><path fill="none" d="M 297.5 190.32 L 307.5 190.32 L 369.38 208 L 307.5 266.344 L 280.98 208 L 307.5 190.32 L 317.5 190.32" stroke-linejoin="round" visibility="visible" stroke="rgba(192,192,192,0.0001)" stroke-width="22" zIndex="2" class=" highcharts-tracker" style="cursor:pointer;"></path></g><g class="highcharts-markers highcharts-tracker" visibility="visible" zIndex="0.1" transform="translate(10,59) scale(1 1)" style="cursor:pointer;" clip-path="none"><path fill="#ED1E79" d="M 280.98 204 L 284.98 208 280.98 212 276.98 208 Z" stroke-width="1"></path><path fill="#ED1E79" d="M 307.5 262.344 L 311.5 266.344 307.5 270.344 303.5 266.344 Z" stroke-width="1"></path><path fill="#ED1E79" d="M 369.38 202 L 375.38 208 369.38 214 363.38 208 Z" stroke-width="1" stroke="#FFFFFF"></path><path fill="#ED1E79" d="M 307.5 186.32 L 311.5 190.32 307.5 194.32 303.5 190.32 Z" stroke-width="1"></path></g></g><text x="318" text-anchor="middle" class="highcharts-title" zIndex="4" style="color:#333333;font-size:18px;fill:#333333;width:571px;" y="24"><tspan>Overview Graph</tspan></text><text x="318" text-anchor="middle" class="highcharts-subtitle" zIndex="4" style="color:#555555;fill:#555555;width:571px;" y="44"><tspan>Click the dots to view detailed metrics</tspan></text><g class="highcharts-legend" zIndex="7" transform="translate(10,60)"><g zIndex="1"><g><g class="highcharts-legend-item" zIndex="1" transform="translate(8,3)"><text x="21" style="color:#333333;font-size:12px;font-weight:bold;cursor:pointer;fill:#333333;" text-anchor="start" zIndex="2" y="15">18</text><rect x="0" y="4" width="16" height="12" zIndex="3" fill="#00A99D"></rect></g><g class="highcharts-legend-item" zIndex="1" transform="translate(8,16)"><text x="21" y="15" style="color:#333333;font-size:12px;font-weight:bold;cursor:pointer;fill:#333333;" text-anchor="start" zIndex="2">Average</text><rect x="0" y="4" width="16" height="12" zIndex="3" fill="#ED1E79"></rect></g></g></g></g><g class="highcharts-axis-labels highcharts-xaxis-labels" zIndex="7"><text x="317.5" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:113px;text-overflow:clip;" text-anchor="middle" transform="translate(0,0)" y="80.19999999999999" opacity="1">Lifecycle</text><text x="509.3" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:113px;text-overflow:clip;" text-anchor="start" transform="translate(0,0)" y="272" opacity="1">Mobility</text><text x="317.5" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:113px;text-overflow:clip;" text-anchor="middle" transform="translate(0,0)" y="463.8" opacity="1">Daylight</text><text x="125.69999999999999" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:113px;text-overflow:clip;" text-anchor="end" transform="translate(0,0)" y="272" opacity="1">Energy</text><text x="0" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:113px;text-overflow:clip;" text-anchor="middle" transform="translate(0,0)" y="-9999">4</text></g><g class="highcharts-axis-labels highcharts-yaxis-labels" zIndex="7"></g><g class="highcharts-tooltip" zIndex="8" style="cursor:default;padding:0;white-space:nowrap;" transform="translate(275,149)" opacity="1" visibility="visible"><path fill="none" d="M 3.5 0.5 L 88.5 0.5 C 91.5 0.5 91.5 0.5 91.5 3.5 L 91.5 56.5 C 91.5 59.5 91.5 59.5 88.5 59.5 L 3.5 59.5 C 0.5 59.5 0.5 59.5 0.5 56.5 L 0.5 3.5 C 0.5 0.5 0.5 0.5 3.5 0.5" isShadow="true" stroke="black" stroke-opacity="0.049999999999999996" stroke-width="5" transform="translate(1, 1)" width="91" height="59"></path><path fill="none" d="M 3.5 0.5 L 88.5 0.5 C 91.5 0.5 91.5 0.5 91.5 3.5 L 91.5 56.5 C 91.5 59.5 91.5 59.5 88.5 59.5 L 3.5 59.5 C 0.5 59.5 0.5 59.5 0.5 56.5 L 0.5 3.5 C 0.5 0.5 0.5 0.5 3.5 0.5" isShadow="true" stroke="black" stroke-opacity="0.09999999999999999" stroke-width="3" transform="translate(1, 1)" width="91" height="59"></path><path fill="none" d="M 3.5 0.5 L 88.5 0.5 C 91.5 0.5 91.5 0.5 91.5 3.5 L 91.5 56.5 C 91.5 59.5 91.5 59.5 88.5 59.5 L 3.5 59.5 C 0.5 59.5 0.5 59.5 0.5 56.5 L 0.5 3.5 C 0.5 0.5 0.5 0.5 3.5 0.5" isShadow="true" stroke="black" stroke-opacity="0.15" stroke-width="1" transform="translate(1, 1)" width="91" height="59"></path><path fill="rgba(249, 249, 249, .85)" d="M 3.5 0.5 L 88.5 0.5 C 91.5 0.5 91.5 0.5 91.5 3.5 L 91.5 56.5 C 91.5 59.5 91.5 59.5 88.5 59.5 L 3.5 59.5 C 0.5 59.5 0.5 59.5 0.5 56.5 L 0.5 3.5 C 0.5 0.5 0.5 0.5 3.5 0.5" stroke="#00A99D" stroke-width="1"></path><text x="8" zIndex="1" style="font-size:12px;color:#333333;fill:#333333;" y="20"><tspan style="font-weight:bold">Mobility</tspan><tspan x="8" dy="15">18: 38%</tspan><tspan x="8" dy="15">Average: 35%</tspan></text></g><text x="625" text-anchor="end" zIndex="8" style="cursor:pointer;color:#909090;font-size:9px;fill:#909090;" y="485">Highcharts.com<title>undefined</title></text></svg></div></div>
+          <br>
+          <div class="table-responsive">
+            <table class="table table-hover" id="table">
+              <thead>
+                <tr>
+                  <th>Icon</th>
+                  <th>Category</th>
+                  <th id="value_title" class="text-center">Value</th>
+                  <th class="text-center">Range</th>
+                  <th class="text-center">Unit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="row1" style="color: black; background-color: white;">
+                  <td><img src="./UMI Dashboard_files/LC.png" width="22px" height="auto"></td>
+                  <td id="oe_title">Energy</td>
+                  <td id="oe" class="text-center">22,013,637</td>
+                  <td id="oe_range" class="text-center">150,684 - 22,013,637</td>
+                  <td id="
+                  " class="text-center">kWh / year</td>
+                </tr>
+                <tr class ="hide" id="row2" style="color: black; background-color: white;">
+                  <td><img src="./UMI Dashboard_files/MO.png" width="22px" height="auto"></td>
+                  <td id="mo_title">Mobility</td>
+                  <td id="mo" class="text-center">38</td>
+                  <td id="mo_range" class="text-center">9 - 43</td>
+                  <td id="mo_unit" class="text-center">Walkscore (%)</td>
+                </tr>
+                <tr class="hide" id="row3" style="color: black; background-color: white;">
+                  <td><img src="./UMI Dashboard_files/OC.png" width="22px" height="auto"></td>
+                  <td id="oc_title">Outdoor Comfort</td>
+                  <td id="oc" class="text-center"></td>
+                  <td id="oc_range" class="text-center">0 - 0</td>
+                  <td id="oc_unit" class="text-center">%</td>
+                </tr>
+                <tr class ="hide" id="row4" style="color: black; background-color: white;">
+                  <td><img src="./UMI Dashboard_files/DA.png" width="22px" height="auto"></td>
+                  <td id="da_title">Daylight</td>
+                  <td id="da" class="text-center">37</td>
+                  <td id="da_range" class="text-center">4 - 100</td>
+                  <td id="da_unit" class="text-center">Autonomy (%)</td>
+                </tr>
+                <tr class ="hide" id="row5" style="color: black; background-color: white;">
+                  <td><img src="./UMI Dashboard_files/LC.png" width="22px" height="auto"></td>
+                  <td id="lc_title">Lifecycle</td>
+                  <td id="lc" class="text-center">31,901</td>
+                  <td id="lc_range" class="text-center">4,756 - 613,009</td>
+                  <td id="lc_unit" class="text-center">kWh / year</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+    <script type="text/javascript" src="./UMI Dashboard_files/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="./UMI Dashboard_files/highcharts.js"></script>
+    <script type="text/javascript" src="./UMI Dashboard_files/highcharts-more.src.js"></script>
+    <script type="text/javascript" src="./UMI Dashboard_files/map.js"></script>
+    <script type="text/javascript" src="./UMI Dashboard_files/map.src.js"></script>
+    <script type="text/javascript" src="./UMI Dashboard_files/data.js"></script>
+    <script type="text/javascript" src="./UMI Dashboard_files/drilldown.js"></script>
+    <script type="text/javascript" src="./UMI Dashboard_files/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./UMI Dashboard_files/script.js"></script>
+    <script type="text/javascript" src="./UMI Dashboard_files/exporting.js"></script>
+    <script type="text/javascript" src="./UMI Dashboard_files/jszip.js"></script>
+
+    <script type="text/javascript" src="./UMI Dashboard_files/example.json"></script>
+    <script type="text/javascript" src="./UMI Dashboard_files/custom.js"></script>
+
+
+
+  
+
+
+
+
+</body></html>
