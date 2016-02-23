@@ -44,7 +44,7 @@
             $.each(zip.files, function (index, zipEntry) {
 
                 var checkName = zipEntry.name;
-                if(checkName.indexOf('sdl-common/') >= 0) {
+                if(checkName.indexOf('sdl-common/','aux-files/') >= 0) {
 
                     // HERE EDIT
                     // launchBuild(zipEntry.asText());
