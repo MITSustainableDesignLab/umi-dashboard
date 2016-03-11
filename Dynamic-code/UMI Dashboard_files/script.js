@@ -179,7 +179,8 @@ var submit = document.getElementById("submit");
 // ------------ Dynamic ------------
 //Defining a header;
 var headers = [];
-//var foo = []
+var default_index = 0;
+var foo = []
 // -------------------------------
 var buildings = [];
 var project = [];
@@ -243,9 +244,9 @@ var comp_level = [];
     // });
 // });
 
-//what happens upon clicking the overview button
+//what happens upon clicking the home button
 $(home_bt).on("click", function() {
-    Start_Chart1();
+    Start_Chart1(default_index);
 });
 
 
@@ -329,16 +330,24 @@ function getUrlVars() {
 }
 
 //-----------------Dynamic--------------
+
 //declaring a header object
 function headerObj() {
+   this.display_name
    this.hname;
    this.htype;
    this.hvalue;
    this.unit;
    this.range;
+   //single value variables
    this.description
    this.levels
    this.nlevels
+   //time series variables
+   this.nCatogeries
+   this.catogeries_display_name
+   this.catogeries
+   this.time_step
 }
 //------------------------------------
 
@@ -372,7 +381,7 @@ function bldDataObj() {
     this.oe_co_norm;
 
     // instead of the following six variables we define a single variable
-    // that is later instantiated as an array in BuildList() and the size of this array will be determined by
+    // that is later instantiated as an array in BuildList2() and the size of this array will be determined by
     // the size of the header in the JSON 
     this.mo_walk;
     this.mo_bike;
@@ -385,6 +394,9 @@ function bldDataObj() {
     this.lc_ca;
     /////////////////////////////////////////////////////////////
     this.single_value_measure
+    this.time_series_measure
+    this.time_series_measure_sum
+    this.time_series_measure_sum_categories
     ////////////////////////////////////////// Dynamic ///////////
 
 }
@@ -417,10 +429,6 @@ function prDataObj() {
     this.avg_da;
     this.avg_lc_en;
     this.avg_lc_ca;
-    //---------------------------------------------
-    // using array of single value measures instead - Size of this array depneds on the header
-    this.avg_single_value_measures
-    //---------------------------------------------
     this.max_oe;
     this.max_oe_norm;
     this.max_mo_wk;
@@ -429,9 +437,6 @@ function prDataObj() {
     this.max_da;
     this.max_lc_en;
     this.max_lc_ca;
-    //---------------------------------------------
-    this.max_single_value_measures
-    //---------------------------------------------
     this.min_oe;
     this.min_oe_norm;
     this.min_mo_wk;
@@ -441,6 +446,9 @@ function prDataObj() {
     this.min_lc_en;
     this.min_lc_ca;
     //---------------------------------------------
+    // using arrays of single value measures instead - Size of these arrays depned on the header
+    this.avg_single_value_measures
+    this.max_single_value_measures
     this.min_single_value_measures
     //---------------------------------------------
 }
@@ -948,7 +956,7 @@ function BuildList(data) {
             $('#y-lc_carbon').hide(); 
         }
 
-        Start_Chart1();
+        Start_Chart1(default_index);
 
         // remove loading div
         listReady();
@@ -975,14 +983,23 @@ function BuildList2(data) {
         for (i = 0; i < data.header.length; i++) {
             
             var head = new headerObj();
-            
+            head.display_name = data.header[i].display_name;
             head.hname  = data.header[i].name;
             head.htype  = data.header[i].type;
+            if(head.htype == "time_series")
+                default_index = i;
+            //console.log(head.htype)
             head.unit   = data.header[i].unit;
             head.range  = data.header[i].range;
+            //------------------------------------------------
             head.description = data.header[i].description;
             head.levels = data.header[i].levels;
             head.nlevels = data.header[i].nlevels;
+            //------------------------------------------------
+            head.nCatogeries = data.header[i].nCatogeries
+            head.catogeries_display_name = data.header[i].catogeries_display_name
+            head.catogeries = data.header[i].catogeries
+            head.time_step = data.header[i].values_in_categories
             headers.push(head);
             array_single_value_measures[i] = [];
         }
@@ -1039,25 +1056,65 @@ function BuildList2(data) {
                 bld.oe_el.push(Math.round(data.features[i].properties.OELighting[j]));
                 bld.oe_he.push(Math.round(data.features[i].properties.OEHeating[j]));
                 bld.oe_co.push(Math.round(data.features[i].properties.OECooling[j]));
-
             }
-
             //-------------------- Dynamic --------------------------------
-            // Defining Performance Measues of Single Value Type Dynamically Here
             
+            
+            //This array has a single number for each of the performance measures
+            // For single value measures (e.g. Walkability): The single number is the value in this performance measure
+            // For Time Series measures (e.g. Energy): The single number is the gross sum for sub-values in the time series across time steps (Monthly...) and categories (Cooling...)
             bld.single_value_measure = [];
             
+
+            // The following three arrays are used only for Time Series measures
+            bld.time_series_measure = [];
+            bld.time_series_measure_sum = [];
+            bld.time_series_measure_sum_categories = [];
             for (j = 0; j < headers.length; j++) {
+
+            // Defining Performance Measues of Time Series Type Dynamically Here
                 
-                if(headers[j].hname == "LCEnergy" || headers[j].hname == "LCCarbon")
-                    bld.single_value_measure.push(Math.round(data.features[i].properties[headers[j].hname] / data.features[i].properties.LCLength) || null)
-                else
-                    bld.single_value_measure.push(data.features[i].properties[headers[j].hname] || null)
+                if(headers[j].htype == "time_series"){
+                    bld.time_series_measure[j] = [];
+                    bld.time_series_measure_sum[j] = 0
+                    bld.time_series_measure_sum_categories[j] = [];
+                    for (ii = 0; ii < headers[j].nCatogeries; ii++){
+                        bld.time_series_measure[j][ii] = [];
+                        bld.time_series_measure_sum_categories[j][ii] = 0;
+                    }
+                    for (ii = 0; ii < headers[j].nCatogeries; ii++){
+                        for (k = 0; k < headers[j].time_step; k++) {
+                            bld.time_series_measure[j][ii].push(Math.round(data.features[i].properties[headers[j].catogeries[ii]][k]));
+                            bld.time_series_measure_sum_categories[j][ii] += bld.time_series_measure[j][ii][k]
+                        }
+                    }
+                    for (ii = 0; ii < headers[j].nCatogeries; ii++){
+                        bld.time_series_measure_sum[j] += bld.time_series_measure_sum_categories[j][ii]
+                    }
+                    bld.single_value_measure.push(bld.time_series_measure_sum[j])
+                }
+            
+            // Defining Performance Measues of Single Value Type Dynamically Here
+            
+                else {
+                    if(headers[j].hname == "LCEnergy" || headers[j].hname == "LCCarbon")
+                        bld.single_value_measure.push(Math.round(data.features[i].properties[headers[j].hname] / data.features[i].properties.LCLength) || null)
+                    else
+                       bld.single_value_measure.push(data.features[i].properties[headers[j].hname] || null)
+                }
             }
-
             //------------------------------------------------------------------            
-
-
+            /*
+            for (j = 0; j < headers[j].nCatogeries; j++){
+                if(headers[j].htype == "time_series"){
+                    for (ii = 0; ii < headers[j].nCatogeries; ii++){
+                        bld.time_series_measure_sum[j] += bld.time_series_measure_sum_categories[ii]
+                    }
+                }
+            }*/
+            foo = bld.time_series_measure_sum_categories
+            
+            //console.log(bld.time_series_measure_sum_categories);
             // set missing values to NULL instead of UNDEFINED, otherwise Highcharts messes up spider chart
             bld.mo_walk = data.features[i].properties.MOWalkability || null;
             bld.mo_bike = data.features[i].properties.MOBikeability || null;
@@ -1540,15 +1597,15 @@ function BuildList2(data) {
             $('#y-lc_carbon').hide(); 
         }
 
-        Start_Chart1();
-
+        Start_Chart1(default_index);
+        console.log(project[0].avg_single_value_measures)
         // remove loading div
         listReady();
 
     // });
 }
 
-function Start_Chart1() {
+function Start_Chart1(index) {
 
     //replace logo
     // document.getElementsByTagName("img")[0].src = "ico/UMI.png";
@@ -1557,7 +1614,7 @@ function Start_Chart1() {
     document.getElementsByTagName("h3")[0].innerHTML = "Buildings" + "<font color='#d3d3d3'>" + " | Energy" + "</style>";
 
     $(bread).find("li").slice(0, 4).remove();
-    $(bread).append("<li>" + "<a onclick='Start_Chart1()' href='#'>All Building Columns</a>" + "</li>");
+    $(bread).append("<li>" + "<a onclick='Start_Chart1(default_index)' href='#'>All Building Columns</a>" + "</li>");
     $(bread).append("<li class='active'>" + "Energy" + "</li>");
 
     //restore tabs to default
@@ -1625,13 +1682,15 @@ function Start_Chart1() {
     */ 
 
     // --------------- Dynamic ---------------------
+    
     $("#table > tbody").empty();
     
-    $('#table > tbody:last').append('<tr id=\"0\" style=\"color: black; background-color: white;\"><td><img src=\"./UMI Dashboard_files/LC.png\" width=\"22px\" height=\"auto\"></td><td id=\"oe_title\">Energy</td><td id=\"oe\" class=\"text-center\">22,013,637</td><td id=\"oe_range\" class=\"text-center\">150,684 - 22,013,637</td><td  class=\"text-center\">kWh / year</td></tr>'); 
-    for (i = 1; i < headers.length+1; i++) {
-        $('#table > tbody:last').append('<tr id= '+i+'><td> <img src=\"UMI Dashboard_files/LC.png\" style=\"width: 22px\" /></td><td> ' +
-         headers[i-1].hname +' </td><td class=\"text-center\">' + project[0].avg_single_value_measures[i-1] +' </td><td class=\"text-center\">' + 
-         project[0].min_single_value_measures[i-1]+'-'+project[0].max_single_value_measures[i-1] +' </td><td class=\"text-center\">' + headers[i-1].unit +' </td></tr>');
+    //$('#table > tbody:last').append('<tr id=\"0\" style=\"color: black; background-color: white;\"><td><img src=\"./UMI Dashboard_files/LC.png\" width=\"22px\" height=\"auto\"></td><td id=\"oe_title\">Energy</td><td id=\"oe\" class=\"text-center\">22,013,637</td><td id=\"oe_range\" class=\"text-center\">150,684 - 22,013,637</td><td  class=\"text-center\">kWh / year</td></tr>'); 
+    for (i = 0; i < headers.length; i++) {
+        //console.log(headers[i])
+        $('#table > tbody:last').append('<tr id= '+i+' ><td> <img src=\"UMI Dashboard_files/LC.png\" style=\"width: 22px\" /></td><td> ' +
+         headers[i].display_name +' </td><td class=\"text-center\">' + project[0].avg_single_value_measures[i] +' </td><td class=\"text-center\">' + 
+         project[0].min_single_value_measures[i]+'-'+project[0].max_single_value_measures[i] +' </td><td class=\"text-center\">' + headers[i].unit +' </td></tr>');
     }
 
         /*tr = $('tbody:last');
@@ -1717,7 +1776,7 @@ function Start_Chart1() {
     var un_1 = "Energy Consumption in kWh / year";
     var un_2 = "Energy Consumption in kWh / sqm / year";
 
-    call_oeall(s, no, sa, ti_1, un_1);
+    call_oeall2(s, no, sa, ti_1, un_1, index);
 
     //mode 1 sorting
 
@@ -1728,10 +1787,10 @@ function Start_Chart1() {
 
         if (no == 0) {
             s = 2
-            call_oeall(2, 0, 0, ti_1, un_1);
+            call_oeall2(2, 0, 0, ti_1, un_1, index);
         } else if (no == 1) {
             s = 0
-            call_oeall(0, 1, 2, ti_2, un_2);
+            call_oeall2(0, 1, 2, ti_2, un_2, index);
         }
 
     });
@@ -1743,10 +1802,10 @@ function Start_Chart1() {
 
         if (no == 0) {
             s = 1
-            call_oeall(1, 0, 0, ti_1, un_1);
+            call_oeall2(1, 0, 0, ti_1, un_1, index);
         } else if (no == 1) {
             s = 0
-            call_oeall(0, 1, 1, ti_2, un_2);
+            call_oeall2(0, 1, 1, ti_2, un_2, index);
         }
     });
 
@@ -1757,10 +1816,10 @@ function Start_Chart1() {
 
         if (no == 0) {
             s = 0
-            call_oeall(0, 0, 0, ti_1, un_1);
+            call_oeall2(0, 0, 0, ti_1, un_1, index);
         } else if (no == 1) {
             s = 0
-            call_oeall(0, 1, 0, ti_2, un_2);
+            call_oeall2(0, 1, 0, ti_2, un_2, index);
         }
 
     });
@@ -1806,11 +1865,11 @@ function Start_Chart1() {
         norm_area_fn()
 
         if (s == 0) {
-            call_oeall(0, 1, 0, ti_2, un_2);
+            call_oeall2(0, 1, 0, ti_2, un_2, index);
         } else if (s == 1) {
-            call_oeall(0, 1, 1, ti_2, un_2);
+            call_oeall2(0, 1, 1, ti_2, un_2, index);
         } else if (s == 2) {
-            call_oeall(0, 1, 2, ti_2, un_2);
+            call_oeall2(0, 1, 2, ti_2, un_2, index);
         }
 
 
@@ -1825,14 +1884,14 @@ function Start_Chart1() {
         norm_off_fn();
 
         if (s == 0) {
-            call_oeall(0, 1, 0, ti_2, un_2);
+            call_oeall2(0, 1, 0, ti_2, un_2, index);
         } else if (s == 1) {
-            call_oeall(0, 1, 1, ti_2, un_2);
+            call_oeall2(0, 1, 1, ti_2, un_2, index);
         } else if (s == 2) {
-            call_oeall(0, 1, 2, ti_2, un_2);
+            call_oeall2(0, 1, 2, ti_2, un_2, index);
         }
 
-        call_oeall(s, 0, sa, ti_1, un_1);
+        call_oeall2(s, 0, sa, ti_1, un_1, index);
 
     });
 
@@ -2355,7 +2414,8 @@ function handle(e) {
         if (input_scl.value != 0) {
             chart.yAxis[0].setExtremes(0, input_scl.value)
         } else {
-            call_oe('Monthly Consumption Normalized', 'Energy Consumption in kWh / sqm / month', buildings[n].oe_co_norm.toLocaleString(), buildings[n].oe_he_norm.toLocaleString(), buildings[n].oe_el_norm.toLocaleString(), buildings[n].oe_eq_norm.toLocaleString())
+            //call_oe('Monthly Consumption Normalized', 'Energy Consumption in kWh / sqm / month', buildings[n].oe_co_norm.toLocaleString(), buildings[n].oe_he_norm.toLocaleString(), buildings[n].oe_el_norm.toLocaleString(), buildings[n].oe_eq_norm.toLocaleString())
+            call_oe2('Monthly Consumption', 'Energy Consumption in kWh / month', buildings[n].time_series_measure[i], i);
         }
 
     }
@@ -2488,6 +2548,75 @@ function building_overview() {
     $(lc_unit).html('kWh / year');
     
 }
+
+//-----------------Dynamic----------------
+function building_time_series_measure_value(i) { 
+
+    //console.log("building_time_series_measure");
+
+    $(bread).find("li").slice(2).remove();
+    $(bread).append("<li>" + "<a onclick='building_overview()' href='#'>Overview</a>" + "</li>");
+    $(bread).append("<li class='active'>" + headers[i].display_name + "</li>");
+
+    row1.style.backgroundColor = "#f5f5f5";
+    row1.style.color = "";
+    row2.style.backgroundColor = "";
+    row3.style.backgroundColor = "";
+    row4.style.backgroundColor = "";
+    row5.style.backgroundColor = "";
+
+    document.getElementsByTagName("img")[0].src = "ico/bOE.png";
+    bldname.innerHTML = buildings[n].bname + "<font color='#d1d1d1'>" + " | Energy</style>";
+
+    //call_oe('Monthly Consumption', 'Energy Consumption in kWh / month', buildings[n].oe_co, buildings[n].oe_he, buildings[n].oe_el, buildings[n].oe_eq);
+    call_oe2('Monthly Consumption', 'Energy Consumption in kWh / month', buildings[n].time_series_measure[i], i);
+    show('#collapseFive', menu_5);
+
+    $(norm_bd_area).on("click", function() {
+
+       // call_oe('Monthly Consumption Normalized', 'Energy Consumption in kWh / sqm / month', buildings[n].oe_co_norm, buildings[n].oe_he_norm, buildings[n].oe_el_norm, buildings[n].oe_eq_norm)
+        call_oe2('Monthly Consumption', 'Energy Consumption in kWh / month', buildings[n].time_series_measure[i], i); //SOS change to norm!
+
+        $(oe_title).html('Energy  ' + "<span class='label label-primary'>Norm</span>");
+        $(oe).html(roundToOne(buildings[n].oe / buildings[n].area).toLocaleString());
+        $(oe_range).html(project[0].min_oe_norm.toLocaleString() + ' - ' + project[0].max_oe_norm.toLocaleString());
+        $(oe_unit).html("kWh / sqm / year");
+
+
+        show('#collapseSix', menu_6);
+
+    })
+
+    $(norm_bd_off).on("click", function() {
+
+       // call_oe('Monthly Consumption', 'Energy Consumption in kWh / month', buildings[n].oe_co, buildings[n].oe_he, buildings[n].oe_el, buildings[n].oe_eq);
+        call_oe2('Monthly Consumption', 'Energy Consumption in kWh / month', buildings[n].time_series_measure[i], i);
+
+        $(oe_title).html('Energy');
+        $(oe).html(buildings[n].oe.toLocaleString());
+        $(oe_range).html(project[0].min_oe.toLocaleString() + ' - ' + project[0].max_oe.toLocaleString());
+        $(oe_unit).html("kWh / year");
+
+        hide('#collapseSix', menu_6);
+
+    })
+
+    hide('#collapseEight', menu_8);
+    hide('#collapseNine', menu_9);
+
+    
+    $(mo_title).html('Mobility');
+    $(mo).html(buildings[n].mo_walk.toLocaleString());
+    $(mo_range).html(project[0].min_mo_wk.toLocaleString() + ' - ' + project[0].max_mo_wk.toLocaleString());
+    $(mo_unit).html('Walkscore (%)');
+
+    $(lc_title).html('Lifecycle');
+    $(lc).html(buildings[n].lc_en.toLocaleString());
+    $(lc_range).html(project[0].min_lc_en.toLocaleString() + ' - ' + project[0].max_lc_en.toLocaleString());
+    $(lc_unit).html('kWh / year');
+    
+}
+//--------------------------------------------------
 
 function building_energy() {
 
@@ -2691,14 +2820,14 @@ function building_lifecycle() {
     });
 }
 
-//**************** Dynamic ******************//
+//-----------------Dynamic-------------------------//
 
 
 function building_single_measure_value(j) {
 
     $(bread).find("li").slice(2).remove();
     $(bread).append("<li>" + "<a onclick='building_overview()' href='#'>Overview</a>" + "</li>");
-    $(bread).append("<li class='active'>" + headers[j].hname + "</li>");
+    $(bread).append("<li class='active'>" + headers[j].display_name + "</li>");
 
     
 
@@ -2740,7 +2869,7 @@ function building_single_measure_value(j) {
     $(lc_unit).html('kWh / year');
     
 */
-    bldname.innerHTML = buildings[n].bname + "<font color='#d1d1d1'>" + " | " + headers[j].hname + "</style>";
+    bldname.innerHTML = buildings[n].bname + "<font color='#d1d1d1'>" + " | " + headers[j].display_name + "</style>";
 
 
     histogram_single_measure_values(j);
@@ -2773,9 +2902,9 @@ function histogram_single_measure_values(j) {
         }
     }
 
-    foo = hist_levels[1];
+    //foo = hist_levels[1];
     var da_colors = ["#FFBE20", "#FFBE20", "#FFBE20", "#FFBE20", "#FFBE20"];
-    
+    var title = headers[j].display_name+' Autonomy Distribution'
 
     /*
     if (n == null) {
@@ -2803,7 +2932,7 @@ function histogram_single_measure_values(j) {
             enabled: false
         },
         title: {
-            text: 'Daylight Autonomy Distribution'
+            text: title
         },
         xAxis: {
             categories: description,
@@ -2841,26 +2970,30 @@ function histogram_single_measure_values(j) {
     });
 };
 
-//*******************************************//
+//--------------------------------------------//
 
 
-//**************** Dynamic ******************//
+//-----------------Dynamic--------------------//
 
 $('#table > tbody').on('click', 'tr', function() {
 
     var index = this.id;
-    console.log(index); 
-
+    console.log(index);
+    //var htype = document.getElementById(index).value;
+    var htype = headers[index].htype;
+    console.log(htype);
+    
     
      if (n != null) {
 
         //if (this.style.backgroundColor == "" || this.style.backgroundColor == "white") {
 
             //building_daylight(); EDIT
-            if(index == 0){
-                building_energy();
+            if( htype == "time_series"){
+                //building_energy();
+                building_time_series_measure_value(index)
             } else {
-                building_single_measure_value(index-1);
+                building_single_measure_value(index);
             }
 
        // } else {
@@ -2868,9 +3001,9 @@ $('#table > tbody').on('click', 'tr', function() {
 //            building_overview();
   //      }
     } else if (n == null && ch_t==1 && mode==1) {
-     if(index == 0){
+     if(htype == "time_series"){
         $(bread).find("li").slice(1).remove();
-        $(bread).append("<li class='active'> Energy </li>");
+        $(bread).append("<li class='active'>" + headers[index].display_name + "</li>");
 
         if (this.style.backgroundColor == "" || this.style.backgroundColor == "white") {
 
@@ -2884,7 +3017,7 @@ $('#table > tbody').on('click', 'tr', function() {
             // histogram_daylight();//EDIT
             //building_single_measure_value(index);
             
-            Start_Chart1();
+            Start_Chart1(index);
             
             
             
@@ -2912,7 +3045,7 @@ $('#table > tbody').on('click', 'tr', function() {
         }
       } else {
         $(bread).find("li").slice(1).remove();
-        $(bread).append("<li class='active'>" + headers[index-1].hname + "</li>");
+        $(bread).append("<li class='active'>" + headers[index].display_name + "</li>");
 
         if (this.style.backgroundColor == "" || this.style.backgroundColor == "white") {
 
@@ -2926,12 +3059,12 @@ $('#table > tbody').on('click', 'tr', function() {
             // histogram_daylight();//EDIT
             //building_single_measure_value(index);
             
-            histogram_single_measure_values(index-1);
+            histogram_single_measure_values(index);
             
             
             
             document.getElementsByTagName("img")[0].src = "ico/bDA.png";
-            document.getElementsByTagName("h3")[0].innerHTML = "Buildings" + "<font color='#d3d3d3'>" + " | "+ headers[index-1].hname + "</style>";
+            document.getElementsByTagName("h3")[0].innerHTML = "Buildings" + "<font color='#d3d3d3'>" + " | "+ headers[index].display_name + "</style>";
 
             show('#collapseZero', menu_begin);
             show('#collapseModes', menu_modes);
@@ -3169,8 +3302,8 @@ function Overview(bldid) {
 
     //-------------------- Dynamic -------------------------
     for(j = 0; j < headers.length; j++){
-        overview_categories.push(headers[j].hname);
-        if (headers[j].hname == "LCEnergy" || headers[j].hname == "LCCarbon"){
+        overview_categories.push(headers[j].display_name);
+        if (headers[j].hname == "LCEnergy" || headers[j].hname == "LCCarbon" || headers[j].htype == "time_series"){
             overview_blddata.push(Math.round(buildings[bldid].single_value_measure[j] / project[0].max_single_value_measures[j] * 100));
             overview_avgdata.push(Math.round(project[0].avg_single_value_measures[j] / project[0].max_single_value_measures[j] * 100));
         } else {
@@ -3196,12 +3329,12 @@ function Overview(bldid) {
         overview_blddata.push(buildings[bldid].da);
         overview_avgdata.push(project[0].avg_da);
     }
-    */
+    
     if(project[0].bool_oe) { 
         overview_categories.push('Energy');
         overview_blddata.push(Math.round(buildings[bldid].oe / buildings[bldid].temp_max * 100));
         overview_avgdata.push(Math.round(buildings[bldid].temp_avg / buildings[bldid].temp_max * 100));
-    }
+    }*/
 
     $('#container').highcharts({
 
@@ -3218,10 +3351,14 @@ function Overview(bldid) {
                 point: {
                     events: {
                         click: function() {                     // Dynamic
-                            if (this.category == 'Energy') {
-                                building_energy();
-                            } else {
-                                building_single_measure_value(0);
+                            for(j = 0; j < headers.length; j++){
+                                if (this.category == headers[j].display_name) {
+                                    if(headers[j].htype == "time_series"){
+                                        building_time_series_measure_value(j);
+                                    } else {
+                                        building_single_measure_value(j);
+                                    }
+                                }
                             }
                               /*else if (this.category == 'MOWalkability') {
                                 building_mobility();
@@ -3268,20 +3405,20 @@ function Overview(bldid) {
             shared: true,
             formatter: function() {
 
-                if (this.x == 'Energy') {
+                /*if (this.x == 'Energy') {
                     var s = '<b>Energy</b>' + '<br/>' + buildings[bldid].bname + ': ' + buildings[bldid].oe.toLocaleString() + ' kWh/year' + '<br/>' +
                         'Use Type Average' + ': ' + buildings[bldid].temp_avg.toLocaleString() + ' kWh/year';
                     return s;
-                } else {
+                } else {*/
                     var s = ''
-                    for(j = 0; j < headers.length; j++){
+                    for(j = 0; j < headers.length; j++){        // Dynamic
                         if (this.x == headers[j].hname)
-                            s = '<b>' + headers[j].hname +'</b>' + '<br/>' + buildings[bldid].bname + ': ' + 
+                            s = '<b>' + headers[j].display_name +'</b>' + '<br/>' + buildings[bldid].bname + ': ' + 
                                 buildings[bldid].single_value_measure[j].toLocaleString() + '%' + '<br/>' +
                                 'Average' + ': ' + project[0].avg_single_value_measures[j].toLocaleString() + headers[j].unit;
                     }
                     return s;
-                }
+                //}
 
                 /* if (this.x == 'Lifecycle') {
                     var s = '<b>Lifecycle</b>' + '<br/>' + buildings[bldid].bname + ': ' + buildings[bldid].lc_en.toLocaleString() + ' kWh/year' + '<br/>' +
@@ -3320,6 +3457,81 @@ function Overview(bldid) {
 };
 
 
+function call_oe2(_title, _units, _series, index) { 
+
+    var series = [];
+    for (var i = 0; i < _series.length; i++) {
+        series.push({
+            name: headers[index].catogeries_display_name[i],  //Pass header Index
+            data: _series[i]
+        });
+    }
+   
+    $('#container').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: _title
+        },
+        xAxis: {
+            categories: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            lineColor: "#DCDCDC",
+            tickColor: "#DCDCDC"
+        },
+        yAxis: {
+            gridLineColor: '#DCDCDC',
+            min: 0,
+            title: {
+                text: _units
+            },
+            stackLabels: {
+                enabled: true,
+                style: {
+                    fontWeight: 'bold',
+                    color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                }
+            }
+        },
+        legend: {
+            align: 'right',
+            x: -70,
+            verticalAlign: 'top',
+            y: 20,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+            borderColor: '#DCDCDC',
+            borderWidth: 1,
+            shadow: false
+        },
+        tooltip: {
+            formatter: function() {
+                return '<b>' + this.x + '</b><br/>' +
+                    this.series.name + ': ' + this.y.toLocaleString() + '<br/>' +
+                    'Total: ' + this.point.stackTotal.toLocaleString();
+            }
+        },
+        plotOptions: {
+            column: {
+                stacking: 'normal',
+                dataLabels: {
+                    enabled: false,
+                    color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                    style: {
+                        textShadow: '0 0 3px black, 0 0 3px black'
+                    }
+                }
+            },
+            line: {
+                marker: {
+                    enabled: false
+                }
+            }
+        },
+
+    series: series
+    })
+};
 
 //call Energy chart
 function call_oe(_title, _units, _series01, _series02, _series03, _series04) {
@@ -3402,6 +3614,174 @@ function call_oe(_title, _units, _series01, _series02, _series03, _series04) {
             data: _series04,
             color: '#00a99d'
         }],
+    })
+};
+
+function call_oeall2(_sort, _norm, _sortarea, _title, _units, index) { //index of time_series_value
+
+    function bldOeObj() {
+        this.bname;
+        this.area;
+        this.sum;
+        this.sum_category;
+        this.norm_oe;
+    }
+    //console.log()
+    var bobs = [];
+    var noe_array = [];
+    for (i = 0; i < buildings.length; i++) {
+        var noe = buildings[i].time_series_measure_sum[index] / buildings[i].area;
+        noe_array.push(noe);
+
+        var b = new bldOeObj();
+        b.bname = buildings[i].bname;
+        b.area = buildings[i].area;
+        b.sum = buildings[i].time_series_measure_sum[index];
+        b.norm_oe = noe_array[i];
+        b.sum_category = [];
+        //categories
+        for(j=0; j <headers[index].nCatogeries; j++){
+            b.sum_category[j] =  buildings[i].time_series_measure_sum_categories[index][j];
+        }
+        bobs.push(b);
+    }
+
+    //sort
+    if (_sort == 1) {
+        bobs.sort(function(a, b) {
+            return b.sum - a.sum
+        })
+    } else if (_sort == 2) {
+        bobs.sort(function(a, b) {
+            return a.sum - b.sum
+        })
+    };
+
+    var categories = [];
+    var bname_arr = [];
+
+    for(j=0; j < headers[index].nCatogeries; j++){
+        categories[j] = [];
+    }
+
+    for (i = 0; i < buildings.length; i++) {
+       for(j=0; j < headers[index].nCatogeries; j++){
+        categories[j].push(bobs[i].sum_category[j])
+        }
+        bname_arr.push(bobs[i].bname)
+    };
+
+    if (_sortarea == 1) {
+        bobs.sort(function(a, b) {
+            return (b.norm_oe - a.norm_oe)
+        })
+    }
+
+    if (_sortarea == 2) {
+        bobs.sort(function(a, b) {
+            return (a.norm_oe - b.norm_oe)
+        })
+    }
+
+    if (_norm == 1) {
+        categories = [];
+        for(j=0; j < headers[index].nCatogeries; j++){
+            categories[j] = [];
+        }       
+        bname_arr = [];
+        var category_a = [];
+        var category_area = [];
+
+        for (i = 0; i < buildings.length; i++) {
+            for(j=0; j < headers[index].nCatogeries; j++){
+                category_a[j] = bobs[i].sum_category[j] / bobs[i].area;
+                category_area[j] = roundToOne(category_a[j]);
+                categories[j].push(category_area[j]);
+            }
+            var bname_arr_area = bobs[i].bname;
+            bname_arr.push(bname_arr_area);
+        }
+        //console.log("NAMES");
+        //console.log(bname_arr);
+    }
+
+    var series = [];
+    for(var j=0; j < headers[index].nCatogeries; j++){ 
+        series.push({
+            name: "YYY", 
+            data: categories[j]
+        });
+    }
+       
+
+    $('#container').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: _title
+        },
+        xAxis: {
+            categories: bname_arr,
+            lineColor: "#DCDCDC",
+            tickColor: "#DCDCDC"
+        },
+        yAxis: {
+            gridLineColor: '#DCDCDC',
+            min: 0,
+            title: {
+                text: _units
+            },
+            stackLabels: {
+                enabled: false,
+                style: {
+                    fontWeight: 'bold',
+                    color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                }
+            }
+        },
+        legend: {
+            align: 'right',
+            x: -70,
+            verticalAlign: 'top',
+            y: 20,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+            borderColor: '#DCDCDC',
+            borderWidth: 1,
+            shadow: false
+        },
+        tooltip: {
+            formatter: function() {
+                return '<b>' + this.x + '</b><br/>' +
+                    this.series.name + ': ' + this.y.toLocaleString() + '<br/>' +
+                    'Total: ' + this.point.stackTotal.toLocaleString();
+            }
+        },
+        plotOptions: {
+            column: {
+                stacking: 'normal',
+                dataLabels: {
+                    enabled: false,
+                    color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                    style: {
+                        textShadow: '0 0 3px black, 0 0 3px black'
+                    }
+                }
+            },
+            series: {
+                cursor: 'pointer',
+                point: {
+                    events: {
+                        click: function() {
+                            n = array_bname.indexOf(this.category)
+                            bldinfo(n)
+                        }
+                    }
+                }
+            }
+        },
+        series: series
     })
 };
 
@@ -4935,9 +5315,9 @@ function temp_columns() {
 
 //go to building column chart
 $(bld_col_bt).on("click", function() {
-
+    console.log(default_index);
     $(bread).find("li").slice(0).remove();
-    $(bread).append("<li>" + "<a onclick='Start_Chart1()' href='#'>All Building Columns</a>" + "</li>");
+    $(bread).append("<li>" + "<a onclick='Start_Chart1(0)' href='#'>All Building Columns</a>" + "</li>");
     $(bread).append("<li class='active'>" + "Energy" + "</li>");
 
     //replace title
@@ -4970,7 +5350,7 @@ $(bld_col_bt).on("click", function() {
         var un_1 = "Energy Consumption in kWh / year";
         var un_2 = "Energy Consumption in kWh / sqm / year";
 
-        call_oeall(s, no, sa, ti_1, un_1);
+        call_oeall2(s, no, sa, ti_1, un_1, 0);
 
     } else if (mode == 2) {
         
