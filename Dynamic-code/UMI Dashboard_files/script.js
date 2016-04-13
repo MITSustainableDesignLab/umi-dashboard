@@ -176,12 +176,11 @@ var submit = document.getElementById("submit");
 
 //declaration of JSON array variables
 
-// ------------ Dynamic ------------
 //Defining a header;
 var headers = [];
 var default_index = 0;
 var foo = []
-// -------------------------------
+
 var buildings = [];
 var project = [];
 
@@ -193,17 +192,7 @@ var array_bid = [];
 var array_oe = [];
 var array_oe_norm = [];
 
-//----------------------Dynamic------------------
 //using one array of arrays for single value measures
-var array_mo_walk = [];
-var array_mo_bike = [];
-
-var array_oc = [];
-
-var array_da = [];
-
-var array_lc_en = [];
-var array_lc_ca = [];
 //----------------------------------------------
 var array_single_value_measures = [];
 //----------------------------------------------
@@ -226,23 +215,6 @@ var array_temp_oe_eq_norm = [];
 var series_obj = [];
 
 var comp_level = [];
-
-// json file name from url:
-// var file_url = decodeURIComponent(getUrlVars()["file"]);
-
-//run in the beginning
-// $(document).ready(function() {
-
-    // if no link passed, use default file
-    // if(file_url == "undefined") { file_url = 'MIT.json'; }
-
-    // $.ajax({
-    //     type: 'GET',
-    //     url: file_url,
-    //     dataType: 'json',
-    //     success: BuildList2(file_url)
-    // });
-// });
 
 //what happens upon clicking the home button
 $(home_bt).on("click", function() {
@@ -305,7 +277,6 @@ function norm_area_fn() {
     $(oe).html(project[0].avg_oe_norm.toLocaleString());
     $(oe_range).html(project[0].min_oe_norm.toLocaleString() + ' - ' + project[0].max_oe_norm.toLocaleString());
     $(oe_unit).html('kWh / sqm / year');
-
 }
 
 function norm_off_fn() {
@@ -329,7 +300,6 @@ function getUrlVars() {
     return map;
 }
 
-//-----------------Dynamic--------------
 
 //declaring a header object
 function headerObj() {
@@ -349,7 +319,6 @@ function headerObj() {
    this.catogeries
    this.time_step
 }
-//------------------------------------
 
 //declaring bldDataObj
 function bldDataObj() {
@@ -380,25 +349,13 @@ function bldDataObj() {
     this.oe_co;
     this.oe_co_norm;
 
-    // instead of the following six variables we define a single variable
     // that is later instantiated as an array in BuildList2() and the size of this array will be determined by
     // the size of the header in the JSON 
-    this.mo_walk;
-    this.mo_bike;
 
-    this.oc;
-
-    this.da;
-
-    this.lc_en;
-    this.lc_ca;
-    /////////////////////////////////////////////////////////////
     this.single_value_measure
     this.time_series_measure
     this.time_series_measure_sum
     this.time_series_measure_sum_categories
-    ////////////////////////////////////////// Dynamic ///////////
-
 }
 
 //declaring prDataObj
@@ -407,579 +364,24 @@ function prDataObj() {
     this.pname;
     this.plocation;
     
-    this.bool_oe;
-    this.bool_mo;
-    this.bool_da;
-    this.bool_lc;
-
-    this.area_max;
-    this.area_min;
-
-    this.wwr_max;
-    this.wwr_min;
-
-    this.avg_oe;
-    this.avg_oe_norm;
-    
-    //----------------- Dynamic ---------------------
-    // ignoring all varibles below
-    this.avg_mo_wk;
-    this.avg_mo_bk;
-    this.avg_oc;
-    this.avg_da;
-    this.avg_lc_en;
-    this.avg_lc_ca;
-    this.max_oe;
-    this.max_oe_norm;
-    this.max_mo_wk;
-    this.max_mo_bk;
-    this.max_oc;
-    this.max_da;
-    this.max_lc_en;
-    this.max_lc_ca;
-    this.min_oe;
-    this.min_oe_norm;
-    this.min_mo_wk;
-    this.min_mo_bk;
-    this.min_oc;
-    this.min_da;
-    this.min_lc_en;
-    this.min_lc_ca;
-    //---------------------------------------------
+   
     // using arrays of single value measures instead - Size of these arrays depned on the header
     this.avg_single_value_measures
     this.max_single_value_measures
     this.min_single_value_measures
-    //---------------------------------------------
-}
-
-//parsing JSON
-function BuildList(data) {
-    // $.getJSON(_path, function(data) {
-        // console.log(JSON.stringify(data));
-
-        
-        for (i = 0; i < data.features.length; i++) {
-
-            var bld = new bldDataObj();
-
-            bld.bid = data.features[i].id;
-
-            // CHECK FOR ERRORS         
-            // If floor area doesn't exist OR no energy data exists,
-            // skip this building & continue with loop
-            if (data.features[i].properties.GrossFloorArea === undefined ||
-                (!(data.features[i].properties.OEEquipment ||
-                    data.features[i].properties.OELighting ||
-                    data.features[i].properties.OEHeating ||
-                    data.features[i].properties.OECooling))) {
-                continue;
-            }
-
-            // Check if building has name (else assign dummy name)
-            if (data.features[i].properties.Name === undefined) {
-                bld.bname = "Bldg_" + i;
-            } else {
-                bld.bname = data.features[i].properties.Name;
-            }
-
-            // Round area to whole number 
-            bld.area = Math.round(data.features[i].properties.GrossFloorArea);
-
-            bld.wwr_n = data.features[i].properties.WwrN;
-            bld.wwr_s = data.features[i].properties.WwrS;
-            bld.wwr_e = data.features[i].properties.WwrE;
-            bld.wwr_w = data.features[i].properties.WwrW;
-
-            bld.wwr = roundToOne((bld.wwr_n + bld.wwr_s + bld.wwr_e + bld.wwr_w) / 4);
-
-            bld.geometry = data.features[i].geometry;
-
-            bld.temp = data.features[i].properties.UseType;
-            bld.temp_name = data.features[i].properties.TemplateName;
-
-            bld.oe_eq = [];
-            bld.oe_el = [];
-            bld.oe_he = [];
-            bld.oe_co = [];
-
-            for (j = 0; j < 12; j++) {
-
-                bld.oe_eq.push(Math.round(data.features[i].properties.OEEquipment[j]));
-                bld.oe_el.push(Math.round(data.features[i].properties.OELighting[j]));
-                bld.oe_he.push(Math.round(data.features[i].properties.OEHeating[j]));
-                bld.oe_co.push(Math.round(data.features[i].properties.OECooling[j]));
-
-            }
-
-            // set missing values to NULL instead of UNDEFINED, otherwise Highcharts messes up spider chart
-            bld.mo_walk = data.features[i].properties.MOWalkability || null;
-            bld.mo_bike = data.features[i].properties.MOBikeability || null;
-            bld.oc = data.features[i].properties.OC || null;
-            bld.da = data.features[i].properties.DaylitArea || null;
-
-            // Embodied Energy and Carbon is already in kWh
-            bld.lc_en = Math.round(data.features[i].properties.LCEnergy / data.features[i].properties.LCLength) || null;
-            bld.lc_ca = Math.round(data.features[i].properties.LCCarbon / data.features[i].properties.LCLength) || null;
-
-            bld.oe = 0;
-            bld.oe_co_all = 0;
-            bld.oe_he_all = 0;
-            bld.oe_el_all = 0;
-            bld.oe_eq_all = 0;
-
-
-            for (j = 0; j < 12; j++) {
-
-                bld.oe += Math.round(bld.oe_eq[j]);
-                bld.oe += Math.round(bld.oe_el[j]);
-                bld.oe += Math.round(bld.oe_he[j]);
-                bld.oe += Math.round(bld.oe_co[j]);
-
-                bld.oe_co_all += Math.round(bld.oe_co[j]);
-                bld.oe_he_all += Math.round(bld.oe_he[j]);
-                bld.oe_el_all += Math.round(bld.oe_el[j]);
-                bld.oe_eq_all += Math.round(bld.oe_eq[j]);
-            }
-
-            bld.oe_co_norm = [];
-            bld.oe_he_norm = [];
-            bld.oe_el_norm = [];
-            bld.oe_eq_norm = [];
-
-            bld.oe_norm = roundToOne(bld.oe / bld.area);
-
-
-            for (j = 0; j < 12; j++) {
-
-                var oe_co_norm_temp = roundToOne(bld.oe_co[j] / bld.area);
-                var oe_he_norm_temp = roundToOne(bld.oe_he[j] / bld.area);
-                var oe_el_norm_temp = roundToOne(bld.oe_el[j] / bld.area);
-                var oe_eq_norm_temp = roundToOne(bld.oe_eq[j] / bld.area);
-
-                bld.oe_co_norm.push(oe_co_norm_temp);
-                bld.oe_he_norm.push(oe_he_norm_temp);
-                bld.oe_el_norm.push(oe_el_norm_temp);
-                bld.oe_eq_norm.push(oe_eq_norm_temp);
-            }
-
-            buildings.push(bld);
-        }
-
-
-        for (i = 0; i < buildings.length; i++) {
-            array_bname.push(buildings[i].bname);
-
-            array_wwr.push(buildings[i].wwr);
-            array_area.push(buildings[i].area);
-
-            array_bid.push(buildings[i].bid);
-
-            array_oe.push(buildings[i].oe);
-            array_oe_norm.push(roundToOne(buildings[i].oe / buildings[i].area));
-            array_mo_walk.push(buildings[i].mo_walk);
-            array_mo_bike.push(buildings[i].mo_bike);
-            array_oc.push(buildings[i].oc);
-            array_da.push(buildings[i].da);
-            array_lc_en.push(buildings[i].lc_en);
-            array_lc_ca.push(buildings[i].lc_ca);
-
-            array_temp_dup.push(buildings[i].temp);
-
-        }
-
-        $.each(array_temp_dup, function(i, el) {
-            if ($.inArray(el, array_temp) === -1) array_temp.push(el);
-        });
-
-        $.each(array_temp_dup, function(i, el) {
-            if ($.inArray(el, array_temp_oe) === -1) array_temp_oe.push(el);
-        });
-
-        $.each(array_temp_dup, function(i, el) {
-            if ($.inArray(el, array_temp_oe_co) === -1) array_temp_oe_co.push(el);
-        });
-
-        $.each(array_temp_dup, function(i, el) {
-            if ($.inArray(el, array_temp_oe_he) === -1) array_temp_oe_he.push(el);
-        });
-
-        $.each(array_temp_dup, function(i, el) {
-            if ($.inArray(el, array_temp_oe_el) === -1) array_temp_oe_el.push(el);
-        });
-
-        $.each(array_temp_dup, function(i, el) {
-            if ($.inArray(el, array_temp_oe_eq) === -1) array_temp_oe_eq.push(el);
-        });
-
-        $.each(array_temp_dup, function(i, el) {
-            if ($.inArray(el, array_temp_oe_norm) === -1) array_temp_oe_norm.push(el);
-        });
-
-        $.each(array_temp_dup, function(i, el) {
-            if ($.inArray(el, array_temp_oe_co_norm) === -1) array_temp_oe_co_norm.push(el);
-        });
-
-        $.each(array_temp_dup, function(i, el) {
-            if ($.inArray(el, array_temp_oe_he_norm) === -1) array_temp_oe_he_norm.push(el);
-        });
-
-        $.each(array_temp_dup, function(i, el) {
-            if ($.inArray(el, array_temp_oe_el_norm) === -1) array_temp_oe_el_norm.push(el);
-        });
-
-        $.each(array_temp_dup, function(i, el) {
-            if ($.inArray(el, array_temp_oe_eq_norm) === -1) array_temp_oe_eq_norm.push(el);
-        });
-
-
-        //Energy by template
-        for (j = 0; j < array_temp_oe.length; j++) {
-
-            array_temp_oe[j] = [array_temp_oe[j]];
-
-            for (i = 0; i < buildings.length; i++) {
-
-                if (buildings[i].temp == array_temp_oe[j][0]) {
-
-                    array_temp_oe[j].push(buildings[i].oe);
-                }
-            }
-        }
-
-
-        //Cooling energy by template
-        for (j = 0; j < array_temp_oe_co.length; j++) {
-
-            array_temp_oe_co[j] = [array_temp_oe_co[j]];
-
-            for (i = 0; i < buildings.length; i++) {
-
-                if (buildings[i].temp == array_temp_oe_co[j][0]) {
-
-                    array_temp_oe_co[j].push(buildings[i].oe_co);
-                }
-            }
-        }
-
-        //Heating energy by template
-        for (j = 0; j < array_temp_oe_he.length; j++) {
-
-            array_temp_oe_he[j] = [array_temp_oe_he[j]];
-
-            for (i = 0; i < buildings.length; i++) {
-
-                if (buildings[i].temp == array_temp_oe_he[j][0]) {
-
-                    array_temp_oe_he[j].push(buildings[i].oe_he);
-                }
-            }
-        }
-
-        //Electric lighting energy by template
-        for (j = 0; j < array_temp_oe_el.length; j++) {
-
-            array_temp_oe_el[j] = [array_temp_oe_el[j]];
-
-            for (i = 0; i < buildings.length; i++) {
-
-                if (buildings[i].temp == array_temp_oe_el[j][0]) {
-
-                    array_temp_oe_el[j].push(buildings[i].oe_el);
-                }
-            }
-        }
-
-        //Equipment energy by template
-        for (j = 0; j < array_temp_oe_eq.length; j++) {
-
-            array_temp_oe_eq[j] = [array_temp_oe_eq[j]];
-
-            for (i = 0; i < buildings.length; i++) {
-
-                if (buildings[i].temp == array_temp_oe_eq[j][0]) {
-
-                    array_temp_oe_eq[j].push(buildings[i].oe_eq);
-                }
-            }
-        }
-
-        //Normalized energy by template
-        for (j = 0; j < array_temp_oe_norm.length; j++) {
-
-            array_temp_oe_norm[j] = [array_temp_oe_norm[j]];
-
-            for (i = 0; i < buildings.length; i++) {
-
-                if (buildings[i].temp == array_temp_oe_norm[j][0]) {
-
-                    array_temp_oe_norm[j].push(buildings[i].oe_norm);
-                }
-            }
-        }
-
-        //Normalized cooling energy by template
-        for (j = 0; j < array_temp_oe_co_norm.length; j++) {
-
-            array_temp_oe_co_norm[j] = [array_temp_oe_co_norm[j]];
-
-            for (i = 0; i < buildings.length; i++) {
-
-                if (buildings[i].temp == array_temp_oe_co_norm[j][0]) {
-
-                    array_temp_oe_co_norm[j].push(buildings[i].oe_co_norm);
-                }
-            }
-        }
-
-        //Normalized energy by template
-        for (j = 0; j < array_temp_oe_he_norm.length; j++) {
-
-            array_temp_oe_he_norm[j] = [array_temp_oe_he_norm[j]];
-
-            for (i = 0; i < buildings.length; i++) {
-
-                if (buildings[i].temp == array_temp_oe_he_norm[j][0]) {
-
-                    array_temp_oe_he_norm[j].push(buildings[i].oe_he_norm);
-                }
-            }
-        }
-
-        //Normalized energy by template
-        for (j = 0; j < array_temp_oe_el_norm.length; j++) {
-
-            array_temp_oe_el_norm[j] = [array_temp_oe_el_norm[j]];
-
-            for (i = 0; i < buildings.length; i++) {
-
-                if (buildings[i].temp == array_temp_oe_el_norm[j][0]) {
-
-                    array_temp_oe_el_norm[j].push(buildings[i].oe_el_norm);
-                }
-            }
-        }
-
-        //Normalized energy by template
-        for (j = 0; j < array_temp_oe_eq_norm.length; j++) {
-
-            array_temp_oe_eq_norm[j] = [array_temp_oe_eq_norm[j]];
-
-            for (i = 0; i < buildings.length; i++) {
-
-                if (buildings[i].temp == array_temp_oe_eq_norm[j][0]) {
-
-                    array_temp_oe_eq_norm[j].push(buildings[i].oe_eq_norm);
-                }
-            }
-        }
-
-
-        //template max and avg by building
-        for (i = 0; i < buildings.length; i++) {
-
-            buildings[i].temp_max = null;
-            buildings[i].temp_avg = null;
-
-            for (j = 0; j < array_temp_oe.length; j++) {
-
-                if (buildings[i].temp == array_temp_oe[j][0]) {
-
-                    buildings[i].temp_max = MaxArray(array_temp_oe[j].slice(1));
-                    buildings[i].temp_avg = Math.round(((array_temp_oe[j].slice(1)).reduce(function(a, b) {
-                        return a + b
-                    })) / (array_temp_oe[j].slice(1)).length)
-                }
-            }
-        };
-
-
-        var sum_oe = array_oe.reduce(function(a, b) {
-            return a + b
-        });
-        var avg_oe = Math.round(sum_oe / array_oe.length);
-        var max_oe = MaxArray(array_oe);
-        var min_oe = MinArray(array_oe);
-
-        var sum_area = array_area.reduce(function(a, b) {
-            return a + b
-        });
-        var avg_area = Math.round(sum_area / array_area.length);
-        var max_area = MaxArray(array_area);
-        var min_area = MinArray(array_area);
-
-        var sum_wwr = array_wwr.reduce(function(a, b) {
-            return a + b
-        });
-        var avg_wwr = Math.round(sum_wwr / array_wwr.length);
-        var max_wwr = MaxArray(array_wwr);
-        var min_wwr = MinArray(array_wwr);
-
-        var sum_oe_norm = array_oe_norm.reduce(function(a, b) {
-            return a + b
-        });
-        var avg_oe_norm = roundToOne(sum_oe_norm / array_oe_norm.length);
-        var max_oe_norm = MaxArray(array_oe_norm);
-        var min_oe_norm = MinArray(array_oe_norm);
-
-        var sum_mo_wk = array_mo_walk.reduce(function(a, b) {
-            return a + b
-        });
-        var avg_mo_wk = Math.round(sum_mo_wk / array_mo_walk.length);
-        var max_mo_wk = MaxArray(array_mo_walk);
-        var min_mo_wk = MinArray(array_mo_walk);
-
-        var sum_mo_bk = array_mo_bike.reduce(function(a, b) {
-            return a + b
-        });
-        var avg_mo_bk = Math.round(sum_mo_bk / array_mo_bike.length);
-        var max_mo_bk = MaxArray(array_mo_bike);
-        var min_mo_bk = MinArray(array_mo_bike);
-
-        var sum_oc = array_oc.reduce(function(a, b) {
-            return a + b
-        });
-        var avg_oc = Math.round(sum_oc / array_oc.length);
-        var max_oc = MaxArray(array_oc);
-        var min_oc = MinArray(array_oc);
-
-        var sum_da = array_da.reduce(function(a, b) {
-            return a + b
-        });
-        var avg_da = Math.round(sum_da / array_da.length);
-        var max_da = MaxArray(array_da);
-        var min_da = MinArray(array_da);
-
-        var sum_lc_en = array_lc_en.reduce(function(a, b) {
-            return a + b
-        });
-        var avg_lc_en = Math.round(sum_lc_en / array_lc_en.length);
-        var max_lc_en = MaxArray(array_lc_en);
-        var min_lc_en = MinArray(array_lc_en);
-
-        var sum_lc_ca = array_lc_ca.reduce(function(a, b) {
-            return a + b
-        });
-        var avg_lc_ca = Math.round(sum_lc_ca / array_lc_ca.length);
-        var max_lc_ca = MaxArray(array_lc_ca);
-        var min_lc_ca = MinArray(array_lc_ca);
-
-        var prj = new prDataObj();
-
-        prj.pname = data.projectName;
-        prj.plocation = data.epwLocation;
-
-        prj.bool_oe = data.metrics.OE;
-        prj.bool_mo = data.metrics.MO;
-        prj.bool_da = data.metrics.DA;
-        prj.bool_lc = data.metrics.LC;
-
-        prj.area_max = max_area;
-        prj.area_min = min_area;
-
-        prj.wwr_max = max_wwr;
-        prj.wwr_min = min_wwr;
-
-        prj.avg_oe = avg_oe;
-        prj.avg_oe_norm = avg_oe_norm;
-        prj.avg_mo_wk = avg_mo_wk;
-        prj.avg_mo_bk = avg_mo_bk;
-        prj.avg_oc = avg_oc;
-        prj.avg_da = avg_da;
-        prj.avg_lc_en = avg_lc_en;
-        prj.avg_lc_ca = avg_lc_ca;
-
-        prj.max_oe = max_oe;
-        prj.max_oe_norm = max_oe_norm;
-        prj.max_mo_wk = max_mo_wk;
-        prj.max_mo_bk = max_mo_bk;
-        prj.max_oc = max_oc;
-        prj.max_da = max_da;
-        prj.max_lc_en = max_lc_en;
-        prj.max_lc_ca = max_lc_ca;
-
-        prj.min_oe = min_oe;
-        prj.min_oe_norm = min_oe_norm;
-        prj.min_mo_wk = min_mo_wk;
-        prj.min_mo_bk = min_mo_bk;
-        prj.min_oc = min_oc;
-        prj.min_da = min_da;
-        prj.min_lc_en = min_lc_en;
-        prj.min_lc_ca = min_lc_ca;
-
-        project.push(prj);
-
-
-        //hide rows if no buildings have results
-        if(!prj.bool_oe) { 
-            $('#row1').hide(); 
-            $('#x-oe_divider').hide(); 
-            $('#x-oe_title').hide();
-            $('#y-oe_divider').hide(); 
-            $('#y-oe_title').hide(); 
-            $('#x-oe').hide(); 
-            $('#x-oe_norm').hide(); 
-            $('#y-oe').hide(); 
-            $('#y-oe_norm').hide(); 
-        }
-
-        if(!prj.bool_mo) { 
-            $('#row2').hide(); 
-            $('#x-mo_divider').hide(); 
-            $('#x-mo_title').hide();
-            $('#y-mo_divider').hide(); 
-            $('#y-mo_title').hide(); 
-            $('#x-mo_walk').hide(); 
-            $('#x-mo_bike').hide(); 
-            $('#y-mo_walk').hide(); 
-            $('#y-mo_bike').hide(); 
-        }
-
-        if(!prj.bool_da) { 
-            $('#row4').hide(); 
-            $('#x-da_divider').hide(); 
-            $('#x-da_title').hide();
-            $('#y-da_divider').hide(); 
-            $('#y-da_title').hide(); 
-            $('#x-da').hide(); 
-            $('#y-da').hide(); 
-        }
-        if(!prj.bool_lc) { 
-            $('#row5').hide();
-            $('#x-lc_divider').hide(); 
-            $('#x-lc_title').hide();
-            $('#y-lc_divider').hide(); 
-            $('#y-lc_title').hide(); 
-            $('#x-lc_energy').hide(); 
-            $('#x-lc_carbon').hide(); 
-            $('#y-lc_energy').hide(); 
-            $('#y-lc_carbon').hide(); 
-        }
-
-        Start_Chart1(default_index);
-
-        // remove loading div
-        listReady();
-
-    // });
 }
 
 // --------------- Testing -------------to print values in objects for testing purposes
 function myFunction(){
-    var f = [ headers[1].range[0], headers[1].levels, headers[1].range[1] ]; //buildings[5].single_value_measure;
-    /*for (i = 0; i < buildings.length; i++){
-        f[i] = buildings[i].lc_en;
-    }*/
+    var f = [ headers[1].range[0], headers[1].levels, headers[1].range[1] ]; 
+    
     foo.toString();
     document.getElementById("demo").innerHTML = foo;
 }
 
 // parsing JSON dynamically
 function BuildList2(data) {
-    // $.getJSON(_path, function(data) {
-        // console.log(JSON.stringify(data));
 
-        //------------------- Dynamic ---------------------
         for (i = 0; i < data.header.length; i++) {
             
             var head = new headerObj();
@@ -987,8 +389,7 @@ function BuildList2(data) {
             head.hname  = data.header[i].name;
             head.htype  = data.header[i].type;
             if(head.htype == "time_series")
-                default_index = i;
-            //console.log(head.htype)
+            default_index = i;
             head.unit   = data.header[i].unit;
             head.range  = data.header[i].range;
             //------------------------------------------------
@@ -1003,7 +404,6 @@ function BuildList2(data) {
             headers.push(head);
             array_single_value_measures[i] = [];
         }
-        //-------------------------------------------------
 
 
         for (i = 0; i < data.features.length; i++) {
@@ -1057,15 +457,13 @@ function BuildList2(data) {
                 bld.oe_he.push(Math.round(data.features[i].properties.OEHeating[j]));
                 bld.oe_co.push(Math.round(data.features[i].properties.OECooling[j]));
             }
-            //-------------------- Dynamic --------------------------------
-            
-            
+           
+             
             //This array has a single number for each of the performance measures
             // For single value measures (e.g. Walkability): The single number is the value in this performance measure
             // For Time Series measures (e.g. Energy): The single number is the gross sum for sub-values in the time series across time steps (Monthly...) and categories (Cooling...)
             bld.single_value_measure = [];
             
-
             // The following three arrays are used only for Time Series measures
             bld.time_series_measure = [];
             bld.time_series_measure_sum = [];
@@ -1073,7 +471,6 @@ function BuildList2(data) {
             for (j = 0; j < headers.length; j++) {
 
             // Defining Performance Measues of Time Series Type Dynamically Here
-                
                 if(headers[j].htype == "time_series"){
                     bld.time_series_measure[j] = [];
                     bld.time_series_measure_sum[j] = 0
@@ -1103,18 +500,10 @@ function BuildList2(data) {
                        bld.single_value_measure.push(data.features[i].properties[headers[j].hname] || null)
                 }
             }
-            //------------------------------------------------------------------            
-            /*
-            for (j = 0; j < headers[j].nCatogeries; j++){
-                if(headers[j].htype == "time_series"){
-                    for (ii = 0; ii < headers[j].nCatogeries; ii++){
-                        bld.time_series_measure_sum[j] += bld.time_series_measure_sum_categories[ii]
-                    }
-                }
-            }*/
+            
+
             foo = bld.time_series_measure_sum_categories
             
-            //console.log(bld.time_series_measure_sum_categories);
             // set missing values to NULL instead of UNDEFINED, otherwise Highcharts messes up spider chart
             bld.mo_walk = data.features[i].properties.MOWalkability || null;
             bld.mo_bike = data.features[i].properties.MOBikeability || null;
@@ -1258,7 +647,6 @@ function BuildList2(data) {
                 }
             }
         }
-
 
         //Cooling energy by template
         for (j = 0; j < array_temp_oe_co.length; j++) {
@@ -1550,53 +938,6 @@ function BuildList2(data) {
 
         project.push(prj);
 
-
-        //hide rows if no buildings have results
-        if(!prj.bool_oe) { 
-            $('#row1').hide(); 
-            $('#x-oe_divider').hide(); 
-            $('#x-oe_title').hide();
-            $('#y-oe_divider').hide(); 
-            $('#y-oe_title').hide(); 
-            $('#x-oe').hide(); 
-            $('#x-oe_norm').hide(); 
-            $('#y-oe').hide(); 
-            $('#y-oe_norm').hide(); 
-        }
-
-        if(!prj.bool_mo) { 
-            $('#row2').hide(); 
-            $('#x-mo_divider').hide(); 
-            $('#x-mo_title').hide();
-            $('#y-mo_divider').hide(); 
-            $('#y-mo_title').hide(); 
-            $('#x-mo_walk').hide(); 
-            $('#x-mo_bike').hide(); 
-            $('#y-mo_walk').hide(); 
-            $('#y-mo_bike').hide(); 
-        }
-
-        if(!prj.bool_da) { 
-            $('#row4').hide(); 
-            $('#x-da_divider').hide(); 
-            $('#x-da_title').hide();
-            $('#y-da_divider').hide(); 
-            $('#y-da_title').hide(); 
-            $('#x-da').hide(); 
-            $('#y-da').hide(); 
-        }
-        if(!prj.bool_lc) { 
-            $('#row5').hide();
-            $('#x-lc_divider').hide(); 
-            $('#x-lc_title').hide();
-            $('#y-lc_divider').hide(); 
-            $('#y-lc_title').hide(); 
-            $('#x-lc_energy').hide(); 
-            $('#x-lc_carbon').hide(); 
-            $('#y-lc_energy').hide(); 
-            $('#y-lc_carbon').hide(); 
-        }
-
         Start_Chart1(default_index);
         console.log(project[0].avg_single_value_measures)
         // remove loading div
@@ -1670,47 +1011,17 @@ function Start_Chart1(index) {
     $(sort).html('')
     $(yaxis0).html(' OE')
     
-    /* ----------------------Drawing in a seperate function-----------------------
-    $(oe_title).html(headers[1].cat_name);
-    $(oe_unit).html("kWh / year");
-
-    $(mo_title).html('Mobility');
-    $(mo_unit).html("Walkscore (%)");
-
-    $(lc_title).html('Lifecycle');
-    $(lc_unit).html("kWh / year");
-    */ 
-
+   
     // --------------- Dynamic ---------------------
     
     $("#table > tbody").empty();
     
-    //$('#table > tbody:last').append('<tr id=\"0\" style=\"color: black; background-color: white;\"><td><img src=\"./UMI Dashboard_files/LC.png\" width=\"22px\" height=\"auto\"></td><td id=\"oe_title\">Energy</td><td id=\"oe\" class=\"text-center\">22,013,637</td><td id=\"oe_range\" class=\"text-center\">150,684 - 22,013,637</td><td  class=\"text-center\">kWh / year</td></tr>'); 
     for (i = 0; i < headers.length; i++) {
-        //console.log(headers[i])
         $('#table > tbody:last').append('<tr id= '+i+' ><td> <img src=\"UMI Dashboard_files/LC.png\" style=\"width: 22px\" /></td><td> ' +
          headers[i].display_name +' </td><td class=\"text-center\">' + project[0].avg_single_value_measures[i] +' </td><td class=\"text-center\">' + 
          project[0].min_single_value_measures[i]+'-'+project[0].max_single_value_measures[i] +' </td><td class=\"text-center\">' + headers[i].unit +' </td></tr>');
     }
 
-        /*tr = $('tbody:last');
-        tr.append("<tr style=\"color: black; background-color: white;\">");
-        tr.append("<td class=\"text-center\">" + headers[i].hname + "</td>");
-        tr.append("<td class=\"text-center\">" + headers[i].hname + "</td>");
-        tr.append("<td class=\"text-center\">" + project[0].avg_lc_ca + "</td>");
-        tr.append("<td class=\"text-center\">" + headers[i].unit + "</td>");
-        tr.append("<td class=\"text-center\">" + project[0].avg_single_value_measures[i] + "</td>");
-        tr.append("</tr>");*/
-        //$('tbody').append(tr);
-
-    /*if (bool_delete)
-    {
-        for (i = 2; i < headers.length+10; i=i+1) {
-            document.getElementById("table").deleteRow(i);
-        }
-    }*/
-    
-    //bool_delete = true
     // ----------------------------------------------
     
     $(dropdown).empty();
@@ -1855,7 +1166,6 @@ function Start_Chart1(index) {
     });
 
 
-
     //normalize by area
     $(norm_area).on("click", function() {
 
@@ -1871,8 +1181,6 @@ function Start_Chart1(index) {
         } else if (s == 2) {
             call_oeall2(0, 1, 2, ti_2, un_2, index);
         }
-
-
     });
 
     //normalize off
@@ -1895,24 +1203,6 @@ function Start_Chart1(index) {
 
     });
 
-
-
-    //append avg and max
-    $(oe).html(project[0].avg_oe.toLocaleString());
-    $(mo).html(project[0].avg_mo_wk.toLocaleString());
-    $(oc).html(project[0].avg_oc.toLocaleString());
-    $(da).html(project[0].avg_da.toLocaleString());
-    $(lc).html(project[0].avg_lc_en.toLocaleString());
-
-    //change column name
-    $(value_title).html('Average');
-
-    //insert range values
-    $(oe_range).html(project[0].min_oe.toLocaleString() + " - " + project[0].max_oe.toLocaleString());
-    $(mo_range).html(project[0].min_mo_wk.toLocaleString() + " - " + project[0].max_mo_wk.toLocaleString());
-    $(oc_range).html(project[0].min_oc.toLocaleString() + " - " + project[0].max_oc.toLocaleString());
-    $(da_range).html(project[0].min_da.toLocaleString() + " - " + project[0].max_da.toLocaleString());
-    $(lc_range).html(project[0].min_lc_en.toLocaleString() + " - " + project[0].max_lc_en.toLocaleString());
 
     for (i = 0; i < buildings.length; i++) {
 
@@ -2414,7 +1704,6 @@ function handle(e) {
         if (input_scl.value != 0) {
             chart.yAxis[0].setExtremes(0, input_scl.value)
         } else {
-            //call_oe('Monthly Consumption Normalized', 'Energy Consumption in kWh / sqm / month', buildings[n].oe_co_norm.toLocaleString(), buildings[n].oe_he_norm.toLocaleString(), buildings[n].oe_el_norm.toLocaleString(), buildings[n].oe_eq_norm.toLocaleString())
             call_oe2('Monthly Consumption', 'Energy Consumption in kWh / month', buildings[n].time_series_measure[i], i);
         }
 
@@ -2475,31 +1764,8 @@ function bldinfo(n) {
 
     //change column name
     $(value_title).html('Value');
-/*
-    //restore tabs to default
-    row1.style.color = "black";
-    row1.style.backgroundColor = "white";
-    row2.style.color = "black";
-    row2.style.backgroundColor = "white";
-    row3.style.color = "black";
-    row3.style.backgroundColor = "white";
-    row4.style.color = "black";
-    row4.style.backgroundColor = "white";
-    row5.style.color = "black";
-    row5.style.backgroundColor = "white";
 
-    //insert range values
-    $(oe_range).html(project[0].min_oe.toLocaleString() + " - " + project[0].max_oe.toLocaleString());
-    $(mo_range).html(project[0].min_mo_wk.toLocaleString() + " - " + project[0].max_mo_wk.toLocaleString());
-    $(oc_range).html(project[0].min_oc.toLocaleString() + " - " + project[0].max_oc.toLocaleString());
-    $(da_range).html(project[0].min_da.toLocaleString() + " - " + project[0].max_da.toLocaleString());
-    $(lc_range).html(project[0].min_lc_en.toLocaleString() + " - " + project[0].max_lc_en.toLocaleString());
-    $(oe_title).html('Energy');
-    $(oe).html(buildings[n].oe.toLocaleString());
-    $(oe_unit).html("kWh / year");
-*/
 }
-
 
 
 function building_overview() {
@@ -2533,26 +1799,9 @@ function building_overview() {
     hide('#collapseModes', menu_modes);
 
     
-    $(oe_title).html('Energy');
-    $(oe).html(buildings[n].oe.toLocaleString());
-    $(oe_unit).html("kWh / year");
-
-    $(mo_title).html('Mobility');
-    $(mo).html(buildings[n].mo_walk.toLocaleString());
-    $(mo_range).html(project[0].min_mo_wk.toLocaleString() + ' - ' + project[0].max_mo_wk.toLocaleString());
-    $(mo_unit).html('Walkscore (%)');
-
-    $(lc_title).html('Lifecycle');
-    $(lc).html(buildings[n].lc_en.toLocaleString());
-    $(lc_range).html(project[0].min_lc_en.toLocaleString() + ' - ' + project[0].max_lc_en.toLocaleString());
-    $(lc_unit).html('kWh / year');
-    
 }
 
-//-----------------Dynamic----------------
 function building_time_series_measure_value(i) { 
-
-    //console.log("building_time_series_measure");
 
     $(bread).find("li").slice(2).remove();
     $(bread).append("<li>" + "<a onclick='building_overview()' href='#'>Overview</a>" + "</li>");
@@ -2568,13 +1817,11 @@ function building_time_series_measure_value(i) {
     document.getElementsByTagName("img")[0].src = "ico/bOE.png";
     bldname.innerHTML = buildings[n].bname + "<font color='#d1d1d1'>" + " | Energy</style>";
 
-    //call_oe('Monthly Consumption', 'Energy Consumption in kWh / month', buildings[n].oe_co, buildings[n].oe_he, buildings[n].oe_el, buildings[n].oe_eq);
     call_oe2('Monthly Consumption', 'Energy Consumption in kWh / month', buildings[n].time_series_measure[i], i);
     show('#collapseFive', menu_5);
 
     $(norm_bd_area).on("click", function() {
 
-       // call_oe('Monthly Consumption Normalized', 'Energy Consumption in kWh / sqm / month', buildings[n].oe_co_norm, buildings[n].oe_he_norm, buildings[n].oe_el_norm, buildings[n].oe_eq_norm)
         call_oe2('Monthly Consumption', 'Energy Consumption in kWh / month', buildings[n].time_series_measure[i], i); //SOS change to norm!
 
         $(oe_title).html('Energy  ' + "<span class='label label-primary'>Norm</span>");
@@ -2589,7 +1836,6 @@ function building_time_series_measure_value(i) {
 
     $(norm_bd_off).on("click", function() {
 
-       // call_oe('Monthly Consumption', 'Energy Consumption in kWh / month', buildings[n].oe_co, buildings[n].oe_he, buildings[n].oe_el, buildings[n].oe_eq);
         call_oe2('Monthly Consumption', 'Energy Consumption in kWh / month', buildings[n].time_series_measure[i], i);
 
         $(oe_title).html('Energy');
@@ -2616,211 +1862,6 @@ function building_time_series_measure_value(i) {
     $(lc_unit).html('kWh / year');
     
 }
-//--------------------------------------------------
-
-function building_energy() {
-
-    $(bread).find("li").slice(2).remove();
-    $(bread).append("<li>" + "<a onclick='building_overview()' href='#'>Overview</a>" + "</li>");
-    $(bread).append("<li class='active'>" + "Energy" + "</li>");
-
-    row1.style.backgroundColor = "#f5f5f5";
-    row1.style.color = "";
-    row2.style.backgroundColor = "";
-    row3.style.backgroundColor = "";
-    row4.style.backgroundColor = "";
-    row5.style.backgroundColor = "";
-
-    document.getElementsByTagName("img")[0].src = "ico/bOE.png";
-    bldname.innerHTML = buildings[n].bname + "<font color='#d1d1d1'>" + " | Energy</style>";
-
-    call_oe('Monthly Consumption', 'Energy Consumption in kWh / month', buildings[n].oe_co, buildings[n].oe_he, buildings[n].oe_el, buildings[n].oe_eq);
-    show('#collapseFive', menu_5);
-
-    $(norm_bd_area).on("click", function() {
-
-        call_oe('Monthly Consumption Normalized', 'Energy Consumption in kWh / sqm / month', buildings[n].oe_co_norm, buildings[n].oe_he_norm, buildings[n].oe_el_norm, buildings[n].oe_eq_norm)
-
-        $(oe_title).html('Energy  ' + "<span class='label label-primary'>Norm</span>");
-        $(oe).html(roundToOne(buildings[n].oe / buildings[n].area).toLocaleString());
-        $(oe_range).html(project[0].min_oe_norm.toLocaleString() + ' - ' + project[0].max_oe_norm.toLocaleString());
-        $(oe_unit).html("kWh / sqm / year");
-
-
-        show('#collapseSix', menu_6);
-
-    })
-
-    $(norm_bd_off).on("click", function() {
-
-        call_oe('Monthly Consumption', 'Energy Consumption in kWh / month', buildings[n].oe_co, buildings[n].oe_he, buildings[n].oe_el, buildings[n].oe_eq);
-
-        $(oe_title).html('Energy');
-        $(oe).html(buildings[n].oe.toLocaleString());
-        $(oe_range).html(project[0].min_oe.toLocaleString() + ' - ' + project[0].max_oe.toLocaleString());
-        $(oe_unit).html("kWh / year");
-
-        hide('#collapseSix', menu_6);
-
-    })
-
-    hide('#collapseEight', menu_8);
-    hide('#collapseNine', menu_9);
-
-    
-    $(mo_title).html('Mobility');
-    $(mo).html(buildings[n].mo_walk.toLocaleString());
-    $(mo_range).html(project[0].min_mo_wk.toLocaleString() + ' - ' + project[0].max_mo_wk.toLocaleString());
-    $(mo_unit).html('Walkscore (%)');
-
-    $(lc_title).html('Lifecycle');
-    $(lc).html(buildings[n].lc_en.toLocaleString());
-    $(lc_range).html(project[0].min_lc_en.toLocaleString() + ' - ' + project[0].max_lc_en.toLocaleString());
-    $(lc_unit).html('kWh / year');
-    
-}
-
-function building_mobility() {
-
-    $(bread).find("li").slice(2).remove();
-    $(bread).append("<li>" + "<a onclick='building_overview()' href='#'>Overview</a>" + "</li>");
-    $(bread).append("<li class='active'>" + "Mobility" + "</li>");
-
-    row2.style.backgroundColor = "#f5f5f5";
-    row2.style.color = "";
-    row1.style.backgroundColor = "";
-    row3.style.backgroundColor = "";
-    row4.style.backgroundColor = "";
-    row5.style.backgroundColor = "";
-
-    //call histogram
-    histogram_walkability();
-
-    document.getElementsByTagName("img")[0].src = "ico/bMO.png";
-    bldname.innerHTML = buildings[n].bname + "<font color='#d1d1d1'>" + " | Mobility</style>";
-
-    hide('#collapseSeven', menu_7);
-    hide('#collapseFive', menu_5);
-    hide('#collapseSix', menu_6);
-    hide('#collapseNine', menu_9);
-
-    show('#collapseEight', menu_8);
-
-    $(oe_title).html('Energy');
-    $(oe).html(buildings[n].oe.toLocaleString());
-    $(oe_unit).html("kWh / year");
-
-    $(lc_title).html('Lifecycle');
-    $(lc).html(buildings[n].lc_en.toLocaleString());
-    $(lc_range).html(project[0].min_lc_en.toLocaleString() + ' - ' + project[0].max_lc_en.toLocaleString());
-    $(lc_unit).html('kWh / year');
-
-    $(walkscore).on("click", function() {
-        walkscore_bd_fn()
-        histogram_walkability();
-    });
-
-    $(bikescore).on("click", function() {
-        bikescore_bd_fn()
-        histogram_bikeability();
-    });
-}
-
-function building_daylight() {
-    $(bread).find("li").slice(2).remove();
-    $(bread).append("<li>" + "<a onclick='building_overview()' href='#'>Overview</a>" + "</li>");
-    $(bread).append("<li class='active'>" + "Daylight" + "</li>");
-
-    row4.style.backgroundColor = "#f5f5f5";
-    row4.style.color = "";
-    row1.style.backgroundColor = "";
-    row2.style.backgroundColor = "";
-    row3.style.backgroundColor = "";
-    row5.style.backgroundColor = "";
-
-    document.getElementsByTagName("img")[0].src = "ico/bDA.png";
-
-    hide('#collapseSeven', menu_7);
-    hide('#collapseFive', menu_5);
-    hide('#collapseSix', menu_6);
-    hide('#collapseEight', menu_8);
-    hide('#collapseNine', menu_9);
-
-    $(oe_title).html('Energy');
-    $(oe).html(buildings[n].oe.toLocaleString());
-    $(oe_unit).html("kWh / year");
-
-    $(mo_title).html('Mobility');
-    $(mo).html(buildings[n].mo_walk.toLocaleString());
-    $(mo_range).html(project[0].min_mo_wk.toLocaleString() + ' - ' + project[0].max_mo_wk.toLocaleString());
-    $(mo_unit).html('Walkscore (%)');
-
-    $(lc_title).html('Lifecycle');
-    $(lc).html(buildings[n].lc_en.toLocaleString());
-    $(lc_range).html(project[0].min_lc_en.toLocaleString() + ' - ' + project[0].max_lc_en.toLocaleString());
-    $(lc_unit).html('kWh / year');
-
-    bldname.innerHTML = buildings[n].bname + "<font color='#d1d1d1'>" + " | Daylight</style>";
-    histogram_daylight();
-}
-
-function building_lifecycle() {
-
-    $(bread).find("li").slice(2).remove();
-    $(bread).append("<li>" + "<a onclick='building_overview()' href='#'>Overview</a>" + "</li>");
-    $(bread).append("<li class='active'>" + "Lifecycle" + "</li>");
-
-    row5.style.backgroundColor = "#f5f5f5";
-    row5.style.color = "";
-    row1.style.backgroundColor = "";
-    row2.style.backgroundColor = "";
-    row4.style.backgroundColor = "";
-    row3.style.backgroundColor = "";
-
-    document.getElementsByTagName("img")[0].src = "ico/bLC.png";
-    bldname.innerHTML = buildings[n].bname + "<font color='#d1d1d1'>" + " | Lifecycle</style>";
-
-    hide('#collapseSeven', menu_7);
-    hide('#collapseFive', menu_5);
-    hide('#collapseSix', menu_6);
-    hide('#collapseEight', menu_8);
-
-    show('#collapseNine', menu_9);
-
-    $(oe_title).html('Energy');
-    $(oe).html(buildings[n].oe.toLocaleString());
-    $(oe_unit).html("kWh / year");
-
-    $(mo_title).html('Mobility');
-    $(mo).html(buildings[n].mo_walk.toLocaleString());
-    $(mo_range).html(project[0].min_mo_wk.toLocaleString() + ' - ' + project[0].max_mo_wk.toLocaleString());
-    $(mo_unit).html('Walkscore (%)');
-
-    call_lcall(1, 'Lifecycle Energy', 'Lifecycle Energy in kWh / year', 'kWh / year');
-
-
-    $(lc_energy).on("click", function() {
-        $(lc_title).html('Lifecycle');
-        $(lc).html(buildings[n].lc_en.toLocaleString());
-        $(lc_range).html(project[0].min_lc_en.toLocaleString() + ' - ' + project[0].max_lc_en.toLocaleString());
-        $(lc_unit).html('kWh / year');
-
-        call_lcall(1, 'Lifecycle Energy', 'Lifecycle Energy in kWh / year', 'kWh / year');
-
-    });
-
-    $(lc_carbon).on("click", function() {
-        $(lc_title).html('Lifecycle  ' + "<span class='label label-lc'>Carbon</span>");
-        $(lc).html(buildings[n].lc_ca.toLocaleString());
-        $(lc_range).html(project[0].min_lc_ca.toLocaleString() + ' - ' + project[0].max_lc_ca.toLocaleString());
-        $(lc_unit).html('kg / year');
-
-        call_lcall(2, 'Lifecycle Carbon', 'Lifecycle Carbon in kg / year', 'kg / year');
-
-    });
-}
-
-//-----------------Dynamic-------------------------//
 
 
 function building_single_measure_value(j) {
@@ -2847,30 +1888,7 @@ function building_single_measure_value(j) {
     hide('#collapseNine', menu_9);
 
 
-    /*for (i = 0; i < headers.length; i++) 
-    {
-
-      $('#table > tbody:last').append('<tr><td class=\"text-center\"> <img src="UMI Dashboard_files/LC.png" style="width: 30px" /></td><td class=\"text-center\"> ' + headers[i].hname +' </td><td class=\"text-center\">' + headers[i].hvalue +' </td><td class=\"text-center\">' +headers[i].unit +' </td><td class=\"text-center\">' + headers[i].range +' </td></tr>');
-    }*/
-/*
-
-    $(oe_title).html('Energy');
-    $(oe).html(buildings[n].oe.toLocaleString());
-    $(oe_unit).html("kWh / year");
-
-    $(mo_title).html('Mobility');
-    $(mo).html(buildings[n].mo_walk.toLocaleString());
-    $(mo_range).html(project[0].min_mo_wk.toLocaleString() + ' - ' + project[0].max_mo_wk.toLocaleString());
-    $(mo_unit).html('Walkscore (%)');
-
-    $(lc_title).html('Lifecycle');
-    $(lc).html(buildings[n].lc_en.toLocaleString());
-    $(lc_range).html(project[0].min_lc_en.toLocaleString() + ' - ' + project[0].max_lc_en.toLocaleString());
-    $(lc_unit).html('kWh / year');
-    
-*/
     bldname.innerHTML = buildings[n].bname + "<font color='#d1d1d1'>" + " | " + headers[j].display_name + "</style>";
-
 
     histogram_single_measure_values(j);
 }
@@ -2878,10 +1896,8 @@ function building_single_measure_value(j) {
 
 function histogram_single_measure_values(j) {
 
-    //var da_description = ["Very Shaded", "Shaded", "Somewhat Daylit", "Daylit", "Sublime"]; 
     var description = headers[j].description;
 
-    //var hist_values = [headers[j].nlevels][];
     var hist_levels = [];
     var current;
     var counters = [];
@@ -2902,26 +1918,8 @@ function histogram_single_measure_values(j) {
         }
     }
 
-    //foo = hist_levels[1];
     var da_colors = ["#FFBE20", "#FFBE20", "#FFBE20", "#FFBE20", "#FFBE20"];
     var title = headers[j].display_name+' Autonomy Distribution'
-
-    /*
-    if (n == null) {
-        da_colors = ["#FFBE20", "#FFBE20", "#FFBE20", "#FFBE20", "#FFBE20"]
-    } else {
-        if ((da_01.indexOf(n)) != -1) {
-            da_colors = ['rgba(255, 190, 32, 1.0)', 'rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 0.4)']
-        } else if ((da_02.indexOf(n)) != -1) {
-            da_colors = ['rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 1.0)', 'rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 0.4)']
-        } else if ((da_03.indexOf(n)) != -1) {
-            da_colors = ['rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 1.0)', 'rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 0.4)']
-        } else if ((da_04.indexOf(n)) != -1) {
-            da_colors = ['rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 1.0)', 'rgba(255, 190, 32, 0.4)']
-        } else if ((da_05.indexOf(n)) != -1) {
-            da_colors = ['rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 0.4)', 'rgba(255, 190, 32, 1.0)']
-        }
-    }*/
 
     $('#container').highcharts({
 
@@ -2970,36 +1968,23 @@ function histogram_single_measure_values(j) {
     });
 };
 
-//--------------------------------------------//
-
-
-//-----------------Dynamic--------------------//
 
 $('#table > tbody').on('click', 'tr', function() {
 
     var index = this.id;
     console.log(index);
-    //var htype = document.getElementById(index).value;
     var htype = headers[index].htype;
     console.log(htype);
     
     
      if (n != null) {
 
-        //if (this.style.backgroundColor == "" || this.style.backgroundColor == "white") {
-
-            //building_daylight(); EDIT
             if( htype == "time_series"){
-                //building_energy();
                 building_time_series_measure_value(index)
             } else {
                 building_single_measure_value(index);
             }
 
-       // } else {
-
-//            building_overview();
-  //      }
     } else if (n == null && ch_t==1 && mode==1) {
      if(htype == "time_series"){
         $(bread).find("li").slice(1).remove();
@@ -3007,19 +1992,12 @@ $('#table > tbody').on('click', 'tr', function() {
 
         if (this.style.backgroundColor == "" || this.style.backgroundColor == "white") {
 
-            //this.style.backgroundColor = "#f5f5f5";
             row1.style.backgroundColor = "";
             row3.style.backgroundColor = "";
             row2.style.backgroundColor = "";
             row5.style.backgroundColor = "";
-
-            //call histogram
-            // histogram_daylight();//EDIT
-            //building_single_measure_value(index);
             
-            Start_Chart1(index);
-            
-            
+            Start_Chart1(index);            
             
             document.getElementsByTagName("img")[0].src = "ico/bDA.png";
             document.getElementsByTagName("h3")[0].innerHTML = "Buildings" + "<font color='#d3d3d3'>" + " | Energy </style>";
@@ -3033,15 +2011,7 @@ $('#table > tbody').on('click', 'tr', function() {
             hide('#collapseNine', menu_9);
             hide('#collapseEight', menu_8);
       
-/*
-            $(oe_title).html('Energy');
-            $(oe).html(project[0].avg_oe.toLocaleString());
-            $(oe_range).html(project[0].min_oe.toLocaleString() + ' - ' + project[0].max_oe.toLocaleString());
-            $(oe_unit).html("kWh / year");
-            $(lc_title).html('Lifecycle');
-            $(lc_range).html(project[0].min_lc_en.toLocaleString() + ' - ' + project[0].max_lc_en.toLocaleString());
-            $(lc_unit).html('kWh / year');
-*/
+
         }
       } else {
         $(bread).find("li").slice(1).remove();
@@ -3049,19 +2019,12 @@ $('#table > tbody').on('click', 'tr', function() {
 
         if (this.style.backgroundColor == "" || this.style.backgroundColor == "white") {
 
-            //this.style.backgroundColor = "#f5f5f5";
             row1.style.backgroundColor = "";
             row3.style.backgroundColor = "";
             row2.style.backgroundColor = "";
             row5.style.backgroundColor = "";
-
-            //call histogram
-            // histogram_daylight();//EDIT
-            //building_single_measure_value(index);
             
             histogram_single_measure_values(index);
-            
-            
             
             document.getElementsByTagName("img")[0].src = "ico/bDA.png";
             document.getElementsByTagName("h3")[0].innerHTML = "Buildings" + "<font color='#d3d3d3'>" + " | "+ headers[index].display_name + "</style>";
@@ -3080,217 +2043,7 @@ $('#table > tbody').on('click', 'tr', function() {
     }
 });
 
-//*******************************************//
-/*                                                                  Dynamic
-//click on row 1
-$(row1).on("click", function() {
 
-    if (n != null) {
-
-        if (row1.style.backgroundColor == "" || row1.style.backgroundColor == "white") {
-
-            building_energy();
-
-        } else {
-
-            building_overview();
-        }
-    } else if (n == null && ch_t==1 && mode==1) {
-
-        $(bread).find("li").slice(1).remove();
-        $(bread).append("<li class='active'>" + "Energy" + "</li>");
-
-        if (this.style.backgroundColor == "" || this.style.backgroundColor == "white") {
-
-            this.style.backgroundColor = "#f5f5f5";
-            row2.style.backgroundColor = "";
-            row3.style.backgroundColor = "";
-            row4.style.backgroundColor = "";
-            row5.style.backgroundColor = "";
-
-            //call histogram
-            Start_Chart1();
-
-            show('#collapseZero', menu_begin);
-            show('#collapseTwo', menu_2);
-            hide('#collapseSeven', menu_7);
-            hide('#collapseFive', menu_5);
-            hide('#collapseSix', menu_6);
-            hide('#collapseNine', menu_9);
-            hide('#collapseEight', menu_8);
-
-            $(oe_title).html('Energy');
-            $(oe).html(project[0].avg_oe.toLocaleString());
-            $(oe_range).html(project[0].min_oe.toLocaleString() + ' - ' + project[0].max_oe.toLocaleString());
-            $(oe_unit).html("kWh / year");
-            $(lc_title).html('Lifecycle');
-            $(lc_range).html(project[0].min_lc_en.toLocaleString() + ' - ' + project[0].max_lc_en.toLocaleString());
-            $(lc_unit).html('kWh / year');
-        }
-
-    }
-})
-
-
-//click on row 2
-$(row2).on("click", function() {
-
-    if (n != null) {
-
-        if (row2.style.backgroundColor == "" || row2.style.backgroundColor == "white") {
-
-            building_mobility();
-
-        } else {
-
-            building_overview();
-        }
-    } else if (n == null && ch_t==1 && mode==1) {
-
-        $(bread).find("li").slice(1).remove();
-        $(bread).append("<li class='active'>" + "Mobility" + "</li>");
-
-        if (this.style.backgroundColor == "" || this.style.backgroundColor == "white") {
-
-            this.style.backgroundColor = "#f5f5f5";
-            row1.style.backgroundColor = "";
-            row3.style.backgroundColor = "";
-            row4.style.backgroundColor = "";
-            row5.style.backgroundColor = "";
-
-            //call histogram
-            histogram_walkability();
-
-            document.getElementsByTagName("img")[0].src = "ico/bMO.png";
-            document.getElementsByTagName("h3")[0].innerHTML = "Buildings" + "<font color='#d3d3d3'>" + " | Mobility" + "</style>";
-
-            hide('#collapseZero', menu_begin);
-            hide('#collapseModes', menu_modes);
-            hide('#collapseTwo', menu_2);
-            hide('#collapseSeven', menu_7);
-            hide('#collapseFive', menu_5);
-            hide('#collapseSix', menu_6);
-            hide('#collapseNine', menu_9);
-            hide('#collapseEight', menu_8);
-
-            $(oe_title).html('Energy');
-            $(oe).html(project[0].avg_oe.toLocaleString());
-            $(oe_range).html(project[0].min_oe.toLocaleString() + ' - ' + project[0].max_oe.toLocaleString());
-            $(oe_unit).html("kWh / year");
-            $(lc_title).html('Lifecycle');
-            $(lc_range).html(project[0].min_lc_en.toLocaleString() + ' - ' + project[0].max_lc_en.toLocaleString());
-            $(lc_unit).html('kWh / year');
-        }
-    }
-});
-
-
-//click on row 4
-$(row4).on("click", function() {
-
-    if (n != null) {
-
-        if (row4.style.backgroundColor == "" || row4.style.backgroundColor == "white") {
-
-            building_daylight();
-
-        } else {
-
-            building_overview();
-        }
-    } else if (n == null && ch_t==1 && mode==1) {
-
-        $(bread).find("li").slice(1).remove();
-        $(bread).append("<li class='active'>" + "Daylight" + "</li>");
-
-        if (this.style.backgroundColor == "" || this.style.backgroundColor == "white") {
-
-            this.style.backgroundColor = "#f5f5f5";
-            row1.style.backgroundColor = "";
-            row3.style.backgroundColor = "";
-            row2.style.backgroundColor = "";
-            row5.style.backgroundColor = "";
-
-            //call histogram
-            histogram_daylight();
-
-            document.getElementsByTagName("img")[0].src = "ico/bDA.png";
-            document.getElementsByTagName("h3")[0].innerHTML = "Buildings" + "<font color='#d3d3d3'>" + " | Daylight" + "</style>";
-
-            hide('#collapseZero', menu_begin);
-            hide('#collapseModes', menu_modes);
-            hide('#collapseTwo', menu_2);
-            hide('#collapseSeven', menu_7);
-            hide('#collapseFive', menu_5);
-            hide('#collapseSix', menu_6);
-            hide('#collapseNine', menu_9);
-            hide('#collapseEight', menu_8);
-
-            $(oe_title).html('Energy');
-            $(oe).html(project[0].avg_oe.toLocaleString());
-            $(oe_range).html(project[0].min_oe.toLocaleString() + ' - ' + project[0].max_oe.toLocaleString());
-            $(oe_unit).html("kWh / year");
-            $(lc_title).html('Lifecycle');
-            $(lc_range).html(project[0].min_lc_en.toLocaleString() + ' - ' + project[0].max_lc_en.toLocaleString());
-            $(lc_unit).html('kWh / year');
-        }
-    }
-});
-
-
-//click on row 5
-$(row5).on("click", function() {
-
-    if (n != null) {
-
-        if (row5.style.backgroundColor == "" || row5.style.backgroundColor == "white") {
-
-            building_lifecycle();
-
-        } else {
-
-            building_overview();
-
-        }
-    } else if (n == null && ch_t==1 && mode==1) {
-
-        $(bread).find("li").slice(1).remove();
-        $(bread).append("<li class='active'>" + "Lifecycle" + "</li>");
-
-        if (this.style.backgroundColor == "" || this.style.backgroundColor == "white") {
-
-            this.style.backgroundColor = "#f5f5f5";
-            row1.style.backgroundColor = "";
-            row2.style.backgroundColor = "";
-            row3.style.backgroundColor = "";
-            row4.style.backgroundColor = "";
-
-            //call histogram
-            call_lcall(1, 'Lifecycle Energy', 'Lifecycle Energy in kWh / year', 'kWh / year');
-
-            document.getElementsByTagName("img")[0].src = "ico/bLC.png";
-            document.getElementsByTagName("h3")[0].innerHTML = "Buildings" + "<font color='#d3d3d3'>" + " | Lifecycle" + "</style>";
-
-            hide('#collapseZero', menu_begin);
-            hide('#collapseModes', menu_modes);
-            hide('#collapseTwo', menu_2);
-            hide('#collapseSeven', menu_7);
-            hide('#collapseFive', menu_5);
-            hide('#collapseSix', menu_6);
-            hide('#collapseNine', menu_9);
-            hide('#collapseEight', menu_8);
-
-            $(oe_title).html('Energy');
-            $(oe).html(project[0].avg_oe.toLocaleString());
-            $(oe_range).html(project[0].min_oe.toLocaleString() + ' - ' + project[0].max_oe.toLocaleString());
-            $(oe_unit).html("kWh / year");
-            $(lc_title).html('Lifecycle');
-            $(lc_range).html(project[0].min_lc_en.toLocaleString() + ' - ' + project[0].max_lc_en.toLocaleString());
-            $(lc_unit).html('kWh / year');
-        }
-    }
-});
-*/
 //overview graph
 function Overview(bldid) {
 
@@ -3311,31 +2064,7 @@ function Overview(bldid) {
             overview_avgdata.push(project[0].avg_single_value_measures[j]);
         }
     }
-    /*
-    if(project[0].bool_lc) { 
-        overview_categories.push('Lifecycle');
-        overview_blddata.push(Math.round(buildings[bldid].lc_en / project[0].max_lc_en * 100));
-        overview_avgdata.push(Math.round(project[0].avg_lc_en / project[0].max_lc_en * 100));
-    }
-
-    if(project[0].bool_mo) { 
-        overview_categories.push('Mobility');
-        overview_blddata.push(buildings[bldid].mo_walk);
-        overview_avgdata.push(project[0].avg_mo_wk);
-    }
-
-    if(project[0].bool_da) { 
-        overview_categories.push('Daylight');
-        overview_blddata.push(buildings[bldid].da);
-        overview_avgdata.push(project[0].avg_da);
-    }
-    
-    if(project[0].bool_oe) { 
-        overview_categories.push('Energy');
-        overview_blddata.push(Math.round(buildings[bldid].oe / buildings[bldid].temp_max * 100));
-        overview_avgdata.push(Math.round(buildings[bldid].temp_avg / buildings[bldid].temp_max * 100));
-    }*/
-
+   
     $('#container').highcharts({
 
         colors: ['#00A99D', '#ED1E79'],
@@ -3350,7 +2079,7 @@ function Overview(bldid) {
                 cursor: 'pointer',
                 point: {
                     events: {
-                        click: function() {                     // Dynamic
+                        click: function() {                     
                             for(j = 0; j < headers.length; j++){
                                 if (this.category == headers[j].display_name) {
                                     if(headers[j].htype == "time_series"){
@@ -3360,13 +2089,7 @@ function Overview(bldid) {
                                     }
                                 }
                             }
-                              /*else if (this.category == 'MOWalkability') {
-                                building_mobility();
-                            } else if (this.category == 'DaylitArea') {
-                                building_daylight();
-                            } else if (this.category == 'LCEnergy') {
-                                building_lifecycle();
-                            }*/
+                              
                         }
                     }
                 }
@@ -3404,36 +2127,14 @@ function Overview(bldid) {
         tooltip: {
             shared: true,
             formatter: function() {
-
-                /*if (this.x == 'Energy') {
-                    var s = '<b>Energy</b>' + '<br/>' + buildings[bldid].bname + ': ' + buildings[bldid].oe.toLocaleString() + ' kWh/year' + '<br/>' +
-                        'Use Type Average' + ': ' + buildings[bldid].temp_avg.toLocaleString() + ' kWh/year';
-                    return s;
-                } else {*/
                     var s = ''
-                    for(j = 0; j < headers.length; j++){        // Dynamic
+                    for(j = 0; j < headers.length; j++){        
                         if (this.x == headers[j].hname)
                             s = '<b>' + headers[j].display_name +'</b>' + '<br/>' + buildings[bldid].bname + ': ' + 
                                 buildings[bldid].single_value_measure[j].toLocaleString() + '%' + '<br/>' +
                                 'Average' + ': ' + project[0].avg_single_value_measures[j].toLocaleString() + headers[j].unit;
                     }
                     return s;
-                //}
-
-                /* if (this.x == 'Lifecycle') {
-                    var s = '<b>Lifecycle</b>' + '<br/>' + buildings[bldid].bname + ': ' + buildings[bldid].lc_en.toLocaleString() + ' kWh/year' + '<br/>' +
-                        'Average' + ': ' + project[0].avg_lc_en.toLocaleString() + ' kWh/year';
-                    return s;
-                } else if (this.x == 'Mobility') {
-                    var s = '<b>Mobility</b>' + '<br/>' + buildings[bldid].bname + ': ' + buildings[bldid].mo_walk.toLocaleString() + '%' + '<br/>' +
-                        'Average' + ': ' + project[0].avg_mo_wk.toLocaleString() + '%';
-                    return s;
-                } else if (this.x == 'Daylight') {
-                    var s = '<b>Daylight</b>' + '<br/>' + buildings[bldid].bname + ': ' + buildings[bldid].da.toLocaleString() + '%' + '<br/>' +
-                        'Average' + ': ' + project[0].avg_da.toLocaleString() + '%';
-                    return s;
-                }*/
-
             }
         },
 
@@ -3533,91 +2234,9 @@ function call_oe2(_title, _units, _series, index) {
     })
 };
 
-//call Energy chart
-function call_oe(_title, _units, _series01, _series02, _series03, _series04) {
 
-    $('#container').highcharts({
-        chart: {
-            type: 'column'
-        },
-        title: {
-            text: _title
-        },
-        xAxis: {
-            categories: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-            lineColor: "#DCDCDC",
-            tickColor: "#DCDCDC"
-        },
-        yAxis: {
-            gridLineColor: '#DCDCDC',
-            min: 0,
-            title: {
-                text: _units
-            },
-            stackLabels: {
-                enabled: true,
-                style: {
-                    fontWeight: 'bold',
-                    color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
-                }
-            }
-        },
-        legend: {
-            align: 'right',
-            x: -70,
-            verticalAlign: 'top',
-            y: 20,
-            floating: true,
-            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
-            borderColor: '#DCDCDC',
-            borderWidth: 1,
-            shadow: false
-        },
-        tooltip: {
-            formatter: function() {
-                return '<b>' + this.x + '</b><br/>' +
-                    this.series.name + ': ' + this.y.toLocaleString() + '<br/>' +
-                    'Total: ' + this.point.stackTotal.toLocaleString();
-            }
-        },
-        plotOptions: {
-            column: {
-                stacking: 'normal',
-                dataLabels: {
-                    enabled: false,
-                    color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
-                    style: {
-                        textShadow: '0 0 3px black, 0 0 3px black'
-                    }
-                }
-            },
-            line: {
-                marker: {
-                    enabled: false
-                }
-            }
-        },
-        series: [{
-            name: 'Cooling',
-            data: _series01,
-            color: '#107dff'
-        }, {
-            name: 'Heating',
-            data: _series02,
-            color: '#ed1e79'
-        }, {
-            name: 'Lighting',
-            data: _series03,
-            color: '#ffbe20'
-        }, {
-            name: 'Equipment',
-            data: _series04,
-            color: '#00a99d'
-        }],
-    })
-};
 
-function call_oeall2(_sort, _norm, _sortarea, _title, _units, index) { //index of time_series_value
+function call_oeall2(_sort, _norm, _sortarea, _title, _units, index) { 
 
     function bldOeObj() {
         this.bname;
@@ -3626,7 +2245,6 @@ function call_oeall2(_sort, _norm, _sortarea, _title, _units, index) { //index o
         this.sum_category;
         this.norm_oe;
     }
-    //console.log()
     var bobs = [];
     var noe_array = [];
     for (i = 0; i < buildings.length; i++) {
@@ -3701,8 +2319,7 @@ function call_oeall2(_sort, _norm, _sortarea, _title, _units, index) { //index o
             var bname_arr_area = bobs[i].bname;
             bname_arr.push(bname_arr_area);
         }
-        //console.log("NAMES");
-        //console.log(bname_arr);
+        
     }
 
     var series = [];
@@ -3782,188 +2399,6 @@ function call_oeall2(_sort, _norm, _sortarea, _title, _units, index) { //index o
             }
         },
         series: series
-    })
-};
-
-//call all Energy
-function call_oeall(_sort, _norm, _sortarea, _title, _units) {
-
-    function bldOeObj(_bn, _ar, _bt, _co, _he, _el, _eq, _noe) {
-        this.bname = _bn;
-        this.area = _ar;
-        this.oe = _bt;
-        this.oe_co_all = _co
-        this.oe_he_all = _he
-        this.oe_el_all = _el
-        this.oe_eq_all = _eq
-
-        this.norm_oe = _noe
-    }
-
-    var bobs = [];
-
-    var noe_array = [];
-
-    for (i = 0; i < buildings.length; i++) {
-
-        var noe = buildings[i].oe / buildings[i].area;
-
-        noe_array.push(noe);
-
-        var b = new bldOeObj(buildings[i].bname, buildings[i].area, buildings[i].oe, buildings[i].oe_co_all, buildings[i].oe_he_all, buildings[i].oe_el_all, buildings[i].oe_eq_all, noe_array[i]);
-        bobs.push(b);
-    }
-
-    //sort
-    if (_sort == 1) {
-        bobs.sort(function(a, b) {
-            return b.oe - a.oe
-        })
-    } else if (_sort == 2) {
-        bobs.sort(function(a, b) {
-            return a.oe - b.oe
-        })
-    };
-
-    var oe_co = [];
-    var oe_he = [];
-    var oe_el = [];
-    var oe_eq = [];
-    var bname_arr = [];
-
-    for (i = 0; i < buildings.length; i++) {
-        oe_co.push(bobs[i].oe_co_all)
-        oe_he.push(bobs[i].oe_he_all)
-        oe_el.push(bobs[i].oe_el_all)
-        oe_eq.push(bobs[i].oe_eq_all)
-        bname_arr.push(bobs[i].bname)
-    };
-
-    if (_sortarea == 1) {
-        bobs.sort(function(a, b) {
-            return (b.norm_oe - a.norm_oe)
-        })
-    }
-
-    if (_sortarea == 2) {
-        bobs.sort(function(a, b) {
-            return (a.norm_oe - b.norm_oe)
-        })
-    }
-
-    if (_norm == 1) {
-
-        oe_co = [];
-        oe_he = [];
-        oe_el = [];
-        oe_eq = [];
-        bname_arr = [];
-
-        for (i = 0; i < buildings.length; i++) {
-
-            var o_co_a = bobs[i].oe_co_all / bobs[i].area;
-            var o_he_a = bobs[i].oe_he_all / bobs[i].area;
-            var o_el_a = bobs[i].oe_el_all / bobs[i].area;
-            var o_eq_a = bobs[i].oe_eq_all / bobs[i].area;
-
-            var oe_co_area = roundToOne(o_co_a);
-            var oe_he_area = roundToOne(o_he_a);
-            var oe_el_area = roundToOne(o_el_a);
-            var oe_eq_area = roundToOne(o_eq_a);
-            var bname_arr_area = bobs[i].bname;
-
-            oe_co.push(oe_co_area)
-            oe_he.push(oe_he_area)
-            oe_el.push(oe_el_area)
-            oe_eq.push(oe_eq_area)
-            bname_arr.push(bname_arr_area)
-        }
-    }
-
-    $('#container').highcharts({
-        chart: {
-            type: 'column'
-        },
-        title: {
-            text: _title
-        },
-        xAxis: {
-            categories: bname_arr,
-            lineColor: "#DCDCDC",
-            tickColor: "#DCDCDC"
-        },
-        yAxis: {
-            gridLineColor: '#DCDCDC',
-            min: 0,
-            title: {
-                text: _units
-            },
-            stackLabels: {
-                enabled: false,
-                style: {
-                    fontWeight: 'bold',
-                    color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
-                }
-            }
-        },
-        legend: {
-            align: 'right',
-            x: -70,
-            verticalAlign: 'top',
-            y: 20,
-            floating: true,
-            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
-            borderColor: '#DCDCDC',
-            borderWidth: 1,
-            shadow: false
-        },
-        tooltip: {
-            formatter: function() {
-                return '<b>' + this.x + '</b><br/>' +
-                    this.series.name + ': ' + this.y.toLocaleString() + '<br/>' +
-                    'Total: ' + this.point.stackTotal.toLocaleString();
-            }
-        },
-        plotOptions: {
-            column: {
-                stacking: 'normal',
-                dataLabels: {
-                    enabled: false,
-                    color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
-                    style: {
-                        textShadow: '0 0 3px black, 0 0 3px black'
-                    }
-                }
-            },
-            series: {
-                cursor: 'pointer',
-                point: {
-                    events: {
-                        click: function() {
-                            n = array_bname.indexOf(this.category)
-                            bldinfo(n)
-                        }
-                    }
-                }
-            }
-        },
-        series: [{
-            name: 'Cooling',
-            data: oe_co
-        }, {
-            name: 'Heating',
-            data: oe_he
-        }, {
-            name: 'Lighting',
-            data: oe_el
-        }, {
-            name: 'Equipment',
-            data: oe_eq
-        }],
-
-        colors: [
-            '#107dff', '#ed1e79', '#ffbe20', '#00a99d'
-        ]
     })
 };
 
