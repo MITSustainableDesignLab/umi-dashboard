@@ -2325,7 +2325,7 @@ function call_oeall2(_sort, _norm, _sortarea, _title, _units, index) {
     var series = [];
     for(var j=0; j < headers[index].nCatogeries; j++){ 
         series.push({
-            name: "YYY", 
+            name: headers[index].catogeries_display_name[j], 
             data: categories[j]
         });
     }
