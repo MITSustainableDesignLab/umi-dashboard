@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>TEST Dashboard</title>
+
+  </head>
+
+  <body>
+    <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Icon</th>
+                  <th>Category</th>
+                  <th id="value_title" class="text-center">Average</th>
+                  <th class="text-center">Range</th>
+                  <th class="text-center">Unit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="row1">
+                  <td><img src="img/OE.png" width="22px" height="auto"></img></td>
+                  <td id="oe_title">Energy</td>
+                  <td id="oe" class="text-center">value</td>
+                  <td id="oe_range" class="text-center">value</td>
+                  <td id="oe_unit" class="text-center">kWh / year</td>
+                </tr>
+                <tr id="row2">
+                  <td><img src="img/MO.png" width="22px" height="auto"></img></td>
+                  <td id="mo_title">Mobility</td>
+                  <td id="mo" class="text-center">value</td>
+                  <td id="mo_range" class="text-center">value</td>
+                  <td id="mo_unit" class="text-center">Walkscore (%)</td>
+                </tr>
+                <tr class="hide" id="row3">
+                  <td><img src="img/OC.png" width="22px" height="auto"></img></td>
+                  <td id="oc_title">Outdoor Comfort</td>
+                  <td id="oc" class="text-center">value</td>
+                  <td id="oc_range" class="text-center">value</td>
+                  <td id="oc_unit" class="text-center">%</td>
+                </tr>
+                <tr id="row4">
+                  <td><img src="img/DA.png" width="22px" height="auto"></img></td>
+                  <td id="da_title">Daylight</td>
+                  <td id="da" class="text-center">value</td>
+                  <td id="da_range" class="text-center">value</td>
+                  <td id="da_unit" class="text-center">Autonomy (%)</td>
+                </tr>
+                <tr id="row5">
+                  <td><img src="img/LC.png" width="22px" height="auto"></img></td>
+                  <td id="lc_title">Lifecycle</td>
+                  <td id="lc" class="text-center">value</td>
+                  <td id="lc_range" class="text-center">value</td>
+                  <td id="lc_unit" class="text-center">Energy</td>
+                </tr>
+              </tbody>
+            </table>
+    </div>
+    <div class="container-fluid" id= "container" style="width:100%; height:490px;"></div>
+
+
+    <script type="text/javascript" src="bin/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/TestScript.js"></script>
+    <script type="text/javascript" src="example.json"></script>
+    <script type="text/javascript" src="bin/highcharts.js"></script>
+    <script type="text/javascript" src="bin/highcharts-more.src.js"></script>
+  </body>
+
+</html>
