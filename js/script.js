@@ -1140,6 +1140,10 @@ function Start_Chart1(index) {
     //sort ascending
     $(sort_asc_b).on("click", function() {
 
+        setTimeout(function() {
+        console.log(1) 
+        }, 1000);
+
         $(sort).html(' ')
 
         call_oeall_comp(2);
@@ -2238,6 +2242,8 @@ function call_oe2(_title, _units, _series, index) {
 
 function call_oeall2(_sort, _norm, _sortarea, _title, _units, index) { 
 
+    setTimeout(function() {
+
     function bldOeObj() {
         this.bname;
         this.area;
@@ -2247,6 +2253,8 @@ function call_oeall2(_sort, _norm, _sortarea, _title, _units, index) {
     }
     var bobs = [];
     var noe_array = [];
+
+
     for (i = 0; i < buildings.length; i++) {
         var noe = buildings[i].time_series_measure_sum[index] / buildings[i].area;
         noe_array.push(noe);
@@ -2400,8 +2408,7 @@ function call_oeall2(_sort, _norm, _sortarea, _title, _units, index) {
         },
         series: series
     })
-};
-
+}, 1000)};
 
 //create scatter object
 function scatterobj() {
