@@ -491,7 +491,7 @@ function BuildList2(data) {
                     bld.single_value_measure.push(bld.time_series_measure_sum[j])
                 }
             
-            // Defining Performance Measues of Single Value Type Dynamically Here
+            // Defining Performance Measures of Single Value Type Dynamically Here
             
                 else {
                     if(headers[j].hname == "LCEnergy" || headers[j].hname == "LCCarbon")
@@ -1751,7 +1751,7 @@ function bldinfo(n) {
     $(bread).append("<li>" + "<a onclick='building_overview()' href='#'>" + buildings[n].bname + "</a>" + "</li>");
     $(bread).append("<li class='active'>" + "Overview" + "</li>");
 
-    //load builing information
+    //load building information
     about.innerHTML = "Building Information";
     about_content.innerHTML =
         "<li>" + "Name: " + buildings[n].bname + "</li>" +
