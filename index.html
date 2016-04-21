@@ -140,6 +140,9 @@
                 </div>
               </div> -->
               
+
+
+
             <!-- menu_begin - Chart Type-->
               <div id="menu_begin" class="panel panel-default hidden">
                 
@@ -176,6 +179,8 @@
                 </div>
               </div>
               
+
+
             <!-- Modes -->
               <div id= "menu_modes" class="panel panel-default hidden">
                 <!--<div class="panel-heading">
@@ -198,6 +203,9 @@
                   </div>
                 </div>-->
               </div>
+
+
+
               
     <!-- Scatter Plot Options -->
               <div id= "menu_0" class="panel panel-default hidden">
@@ -299,6 +307,9 @@
               </div>
               
 
+
+
+
     <!-- Building Column Options -->
               
               <div id= "menu_2" class="panel panel-default hidden">
@@ -322,9 +333,9 @@
                         </button>
                         
                         <ul class="dropdown-menu" role="menu"> 
+                          <li><a id="sort_reset" href="#">Reset</a></li>
                           <li><a id="sort_asc" href="#">Ascending</a></li>              
                           <li><a id="sort_dec" href="#">Descending</a></li>
-                          <li><a id="sort_reset" href="#">Reset</a></li>
                         </ul>
                       </div>
 
@@ -338,12 +349,13 @@
                           <li><a id="norm_area" href="#">Normalized Consumption</a></li>
                         </ul>
                       </div>
-
                     </div>
                   </div>
                 </div>
               </div>
             
+    <!-- Not Sure what this is doing.... -->
+
               <div id= "menu_2b" class="panel panel-default hidden">
                 <div class="panel-heading">
                   <li>
@@ -352,33 +364,8 @@
                     </a>
                   </li>
                 </div>
-                <div id="collapseTwoB" class="panel-collapse collapse">
-                  <div class="panel-body">
-                    <div class="btn-group-vertical btn-block">
-                      <div class="btn-group">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                          Sort
-                          <span class="caret"></span><a id="sort_b"></a>
-                        </button>
-                        <ul class="dropdown-menu" role="menu"> 
-                          <li><a id="sort_asc_b" href="project.json.html#">Ascending</a></li>              
-                          <li><a id="sort_dec_b" href="project.json.html#">Descending</a></li>
-                          <li><a id="sort_reset_b" href="project.json.html#">Reset</a></li>
-                        </ul>
-                      </div>
-                      <div class="btn-group">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                          Y Axis
-                          <span class="caret"></span><a id="y-axis-0"> OE</a>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                          <li><a id="norm_off" href="#">Consumption</a></li>
-                          <li><a id="norm_area" href="#">Normalized Consumption</a></li>
-                        </ul>
-                    </div>
-                  </div>
-                </div>
               </div>
+
               <div id="menu_3" class="panel panel-default hidden">
                 <div class="panel-heading">
                   <li>
@@ -417,6 +404,11 @@
                   </div>
                 </div>
               </div>
+             
+
+
+   <!-- Categorical Use Types Building Options -->
+
               <div id="menu_7" class="panel panel-default hidden">
                 <div class="panel-heading">
                  <li>
@@ -442,6 +434,9 @@
                   </div>
                 </div>
               </div>
+
+      <!-- Not Sure what this is  -->
+
               <div id="menu_8" class="panel panel-default hidden">
                 <div class="panel-heading">
                  <li>
@@ -475,6 +470,8 @@
             </div>
           </ul>
         </div>
+
+
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <ol id="bread" class="breadcrumb">
             <li><a href="UMI_D-file=project.json.html#">All Buildings</a></li>
@@ -484,52 +481,54 @@
           <div class="container-fluid" id= "container" style="width:100%; height:490px;">
           </div>
           <br>
+
           <div class="table-responsive">
-            <table class="table table-hover">
+            <table class="table table-hover" id="table">
               <thead>
                 <tr>
                   <th>Icon</th>
                   <th>Category</th>
-                  <th id="value_title" class="text-center">Average</th>
+                  <th id="value_title" class="text-center">Value</th>
                   <th class="text-center">Range</th>
                   <th class="text-center">Unit</th>
                 </tr>
               </thead>
               <tbody>
-                <tr id="row1">
-                  <td><img src="img/OE.png" width="22px" height="auto"></img></td>
+                <tr id="row1" style="color: black; background-color: white;">
+                  <td><img src="./UMI Dashboard_files/LC.png" width="22px" height="auto"></td>
                   <td id="oe_title">Energy</td>
-                  <td id="oe" class="text-center">value</td>
-                  <td id="oe_range" class="text-center">value</td>
-                  <td id="oe_unit" class="text-center">kWh / year</td>
+                  <td id="oe" class="text-center">22,013,637</td>
+                  <td id="oe_range" class="text-center">150,684 - 22,013,637</td>
+                  <td id="
+                  " class="text-center">kWh / year</td>
                 </tr>
-                <tr id="row2">
-                  <td><img src="img/MO.png" width="22px" height="auto"></img></td>
+                <tr class ="hide" id="row2" style="color: black; background-color: white;">
+                  <td><img src="./UMI Dashboard_files/MO.png" width="22px" height="auto"></td>
                   <td id="mo_title">Mobility</td>
-                  <td id="mo" class="text-center">value</td>
-                  <td id="mo_range" class="text-center">value</td>
+                  <td id="mo" class="text-center">38</td>
+                  <td id="mo_range" class="text-center">9 - 43</td>
                   <td id="mo_unit" class="text-center">Walkscore (%)</td>
                 </tr>
-                <tr class="hide" id="row3">
-                  <td><img src="img/OC.png" width="22px" height="auto"></img></td>
+                <tr class="hide" id="row3" style="color: black; background-color: white;">
+                  <td><img src="./UMI Dashboard_files/OC.png" width="22px" height="auto"></td>
                   <td id="oc_title">Outdoor Comfort</td>
-                  <td id="oc" class="text-center">value</td>
-                  <td id="oc_range" class="text-center">value</td>
+                  <td id="oc" class="text-center"></td>
+                  <td id="oc_range" class="text-center">0 - 0</td>
                   <td id="oc_unit" class="text-center">%</td>
                 </tr>
-                <tr id="row4">
-                  <td><img src="img/DA.png" width="22px" height="auto"></img></td>
+                <tr class ="hide" id="row4" style="color: black; background-color: white;">
+                  <td><img src="./UMI Dashboard_files/DA.png" width="22px" height="auto"></td>
                   <td id="da_title">Daylight</td>
-                  <td id="da" class="text-center">value</td>
-                  <td id="da_range" class="text-center">value</td>
+                  <td id="da" class="text-center">37</td>
+                  <td id="da_range" class="text-center">4 - 100</td>
                   <td id="da_unit" class="text-center">Autonomy (%)</td>
                 </tr>
-                <tr id="row5">
-                  <td><img src="img/LC.png" width="22px" height="auto"></img></td>
+                <tr class ="hide" id="row5" style="color: black; background-color: white;">
+                  <td><img src="./UMI Dashboard_files/LC.png" width="22px" height="auto"></td>
                   <td id="lc_title">Lifecycle</td>
-                  <td id="lc" class="text-center">value</td>
-                  <td id="lc_range" class="text-center">value</td>
-                  <td id="lc_unit" class="text-center">Energy</td>
+                  <td id="lc" class="text-center">31,901</td>
+                  <td id="lc_range" class="text-center">4,756 - 613,009</td>
+                  <td id="lc_unit" class="text-center">kWh / year</td>
                 </tr>
               </tbody>
             </table>
@@ -537,7 +536,6 @@
         </div>
       </div>
     </div>
-
 
 
 
