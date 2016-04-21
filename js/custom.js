@@ -44,7 +44,7 @@
             $.each(zip.files, function (index, zipEntry) {
 
                 var checkName = zipEntry.name;
-                if(checkName.indexOf('sdl-common/') >= 0) {
+                if(checkName.indexOf('sdl-common/','aux-files/') >= 0) {
 
                     // HERE EDIT
                     // launchBuild(zipEntry.asText());
@@ -115,11 +115,13 @@ function launchBuild(json) {
 
     emptyVariables();
     // add loading feature 
-    $('#introModalContent').append("<div class='loading-modal'><div class='row'><img src='ico/umi-loading.gif'></div><div class='row' style='padding-top:20px;'><span class='btn btn-default disabled'>LOADING SIMULATION DATA</span></div></div>");
+    $('#introModalContent').append("<div class='loading-modal'><div class='row'><img src='img/umi-loading.gif'></div><div class='row' style='padding-top:20px;'><span class='btn btn-default disabled'>LOADING SIMULATION DATA</span></div></div>");
 
     // 
     setTimeout(function() {
-        BuildList(json);
+        // -----------Tariq--------------
+        BuildList2(json);
+        // ------------------------------
     }, 1000);
    
     // $('#introModal').modal('hide');

@@ -1,4 +1,13 @@
+var example_json = 
 {
+  "header": 
+    [
+      { "type" : "time_series", "display_name":"Energy", "name": "Energy", "unit":"km", "range": ["0","100"], "nCatogeries":"4", "catogeries_display_name":["Cooling","Heating","Lighting","Equipment"], "catogeries":["OECooling","OEHeating","OELighting","OEEquipment"], "values_in_categories" : "12"},
+      { "type" : "single_value", "display_name":"Walkability", "name": "MOWalkability", "unit":"km", "range": ["0","100"], "description":["W1","W2","W3","W4","W5","W6"], "levels":["20","40","60","80","90"], "nlevels":"6" },
+      { "type" : "single_value", "display_name":"Bikeability", "name": "MOBikeability", "unit":"km", "range": ["0","100"], "description":["B1","B2","B3","B4"], "levels":["20","40","60"], "nlevels":"4" },
+      { "type" : "single_value", "display_name":"Daylight", "name": "DaylitArea", "unit":"km", "range": ["0","100"], "description":["D1","D2","D3"], "levels":["20","40"], "nlevels":"3" },
+      { "type" : "single_value", "display_name":"Lifecycle", "name": "LCEnergy", "unit":"km", "range": ["0","1000000"], "description":["LL1","L2","L3","L4","L5"], "levels":["5000","10000","50000","100000","500000"], "nlevels":"5" }
+    ],
   "features": [
     {
       "id": "0471e5b6-cb32-4621-aa14-a8af1288c232",
@@ -18854,5 +18863,5 @@
     "OE": true
   },
   "projectName": "MIT Campus",
-  "epwLocation": "Central Square, Cambridge MA"
+  "epwLocation": "Example Data - Central Square, Cambridge MA"
 }

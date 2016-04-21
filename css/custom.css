@@ -10,7 +10,7 @@ body {
 
 #introModal {
     background-color: white;
-    background-image: url('img/SplBack.jpg');
+    background-image: url('SplBack.jpg');
     /*background-size: 100% 100%;*/
     background-position: center;
     text-align: center;
