@@ -5082,7 +5082,7 @@ function create_geodata(){
         var blddata = new bldGeoData();
 
         blddata.code = buildings[i].bname;
-        blddata.value = buildings[i].oe;
+        blddata.value = buildings[i].oe_norm;
 
         building_data.push(blddata);
 
@@ -5137,8 +5137,8 @@ function create_geodata(){
                 [0.5, '#ffbe20'],
                 [1.0, '#ed1e79']
             ],
-            max: project[0].max_oe,
-            min: project[0].min_oe,
+            max: project[0].max_oe_norm,
+            min: (project[0].min_oe_norm),
             tickColor: "#DCDCDC"
         },
 
