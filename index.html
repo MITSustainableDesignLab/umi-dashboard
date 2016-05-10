@@ -183,25 +183,6 @@
 
             <!-- Modes -->
               <div id= "menu_modes" class="panel panel-default hidden">
-                <!--<div class="panel-heading">
-                  <li>
-                    <a data-toggle="collapse" data-parent="#accordion" href="project.json.html#collapseModes">
-                      Compliance Mode
-                    </a>
-                  </li>
-                </div>
-                <div id="collapseModes" class="panel-collapse collapse">
-                  <div class="panel-body">
-                    <div class="btn-group btn-group-justified" data-toggle="buttons">
-                      <label class="btn btn-default active" id="mode_view" >
-                        <input type="radio" name="options" checked> Off
-                      </label>
-                      <label class="btn btn-default" id="mode_comp" type="button" href="#" data-toggle="modal" data-target="#ModalCompliance">
-                        <input type="radio" name="options"> On
-                      </label>
-                    </div>
-                  </div>
-                </div>-->
               </div>
 
 
@@ -354,7 +335,7 @@
                 </div>
               </div>
             
-    <!-- Not Sure what this is doing.... -->
+    <!-- Menu Panels for chart mod -->
 
               <div id= "menu_2b" class="panel panel-default hidden">
                 <div class="panel-heading">
@@ -482,6 +463,8 @@
           </div>
           <br>
 
+          <!-- Table drawing statically with dynamic vars -->
+
           <div class="table-responsive">
             <table class="table table-hover" id="table">
               <thead>
@@ -495,36 +478,37 @@
               </thead>
               <tbody>
                 <tr id="row1" style="color: black; background-color: white;">
-                  <td><img src="./UMI Dashboard_files/LC.png" width="22px" height="auto"></td>
+                  <td><img src="./img/LC.png" width="22px" height="auto"></td>
                   <td id="oe_title">Energy</td>
                   <td id="oe" class="text-center">22,013,637</td>
-                  <td id="oe_range" class="text-center">150,684 - 22,013,637</td>
+                  <td </td>
                   <td id="
                   " class="text-center">kWh / year</td>
+                  <td id="oe_range" class="text-center">150,684 - 22,013,637</td>
                 </tr>
                 <tr class ="hide" id="row2" style="color: black; background-color: white;">
-                  <td><img src="./UMI Dashboard_files/MO.png" width="22px" height="auto"></td>
+                  <td><img src="./img/MO.png" width="22px" height="auto"></td>
                   <td id="mo_title">Mobility</td>
                   <td id="mo" class="text-center">38</td>
                   <td id="mo_range" class="text-center">9 - 43</td>
                   <td id="mo_unit" class="text-center">Walkscore (%)</td>
                 </tr>
                 <tr class="hide" id="row3" style="color: black; background-color: white;">
-                  <td><img src="./UMI Dashboard_files/OC.png" width="22px" height="auto"></td>
+                  <td><img src="./img/OC.png" width="22px" height="auto"></td>
                   <td id="oc_title">Outdoor Comfort</td>
                   <td id="oc" class="text-center"></td>
                   <td id="oc_range" class="text-center">0 - 0</td>
                   <td id="oc_unit" class="text-center">%</td>
                 </tr>
                 <tr class ="hide" id="row4" style="color: black; background-color: white;">
-                  <td><img src="./UMI Dashboard_files/DA.png" width="22px" height="auto"></td>
+                  <td><img src="./img/DA.png" width="22px" height="auto"></td>
                   <td id="da_title">Daylight</td>
                   <td id="da" class="text-center">37</td>
                   <td id="da_range" class="text-center">4 - 100</td>
                   <td id="da_unit" class="text-center">Autonomy (%)</td>
                 </tr>
                 <tr class ="hide" id="row5" style="color: black; background-color: white;">
-                  <td><img src="./UMI Dashboard_files/LC.png" width="22px" height="auto"></td>
+                  <td><img src="./img/LC.png" width="22px" height="auto"></td>
                   <td id="lc_title">Lifecycle</td>
                   <td id="lc" class="text-center">31,901</td>
                   <td id="lc_range" class="text-center">4,756 - 613,009</td>
