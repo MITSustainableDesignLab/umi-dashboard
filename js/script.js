@@ -218,7 +218,14 @@ var comp_level = [];
 
 //what happens upon clicking the home button
 $(home_bt).on("click", function() {
-    Start_Chart1(default_index);
+    Start_Chart1(default_index)
+    $('.table-responsive').show();
+    about.innerHTML = "Project Information";
+    about_content.innerHTML =
+        "<li>" + "Number of Buildings: " + buildings.length + "</li>" +
+        "<li>" + "Number of Use Types: " + array_temp.length + "</li>" +
+        "<li>" + "Area Range: " + project[0].area_min.toLocaleString() + " - " + project[0].area_max.toLocaleString() + " sqm" + "</li>"
+
 });
 
 
@@ -952,11 +959,12 @@ function Start_Chart1(index) {
     // document.getElementsByTagName("img")[0].src = "img/UMI.png";
 
     //replace title
-    document.getElementsByTagName("h3")[0].innerHTML = "Buildings" + "<font color='#d3d3d3'>" + " | Energy" + "</style>";
+    document.getElementsByTagName("h3")[0].innerHTML = "All Buildings" + "<font color='#d3d3d3'>" + " | Energy" + "</style>";
 
     $(bread).find("li").slice(0, 4).remove();
-    $(bread).append("<li>" + "<a onclick='Start_Chart1(default_index)' href='#'>All Building Columns</a>" + "</li>");
+    $(bread).append("<li>" + "<a onclick='Start_Chart1(default_index)' href='#'>Bar Chart</a>" + "</li>");
     $(bread).append("<li class='active'>" + "Energy" + "</li>");
+    $('.table-responsive').show();
 
     //restore tabs to default
     row1.style.color = "black";
@@ -974,6 +982,8 @@ function Start_Chart1(index) {
     mode = 1
 
     show('#collapseModes', menu_modes);
+    show('#collapseZero', menu_0)
+    show('#collapseBegin', menu_begin)
 
     $(mode_view).button('toggle')
     $(bld_col_bt).button('toggle')
@@ -993,7 +1003,6 @@ function Start_Chart1(index) {
     show('#collapseModes', menu_modes);
 
     hide('#collapseZero', menu_0);
-    //hide('#collapseCompliance', menu_compliance)
     hide('#collapseFive', menu_5);
     hide('#collapseSix', menu_6);
     hide('#collapseSeven', menu_7);
@@ -1017,7 +1026,7 @@ function Start_Chart1(index) {
     $("#table > tbody").empty();
     
     for (i = 0; i < headers.length; i++) {
-        $('#table > tbody:last').append('<tr id= '+i+' ><td> <img src=\"img/LC.png\" style=\"width: 22px\" /></td><td> ' +
+        $('#table > tbody:last').append('<tr id= '+i+' ><td> <img src=\"img/OE.png\" style=\"width: 22px\" /></td><td> ' +
          headers[i].display_name +' </td><td class=\"text-center\">' + project[0].avg_single_value_measures[i] +' </td><td class=\"text-center\">' + 
          project[0].min_single_value_measures[i]+'-'+project[0].max_single_value_measures[i] +' </td><td class=\"text-center\">' + headers[i].unit +' </td></tr>');
     }
@@ -1087,7 +1096,7 @@ function Start_Chart1(index) {
     var un_1 = "Energy Consumption in kWh / year";
     var un_2 = "Energy Consumption in kWh / sqm / year";
 
-    call_oeall2(s, no, sa, ti_1, un_1, index);
+    call_oeall2(0, 0, 0, ti_1, un_1, index);
 
     //mode 1 sorting
 
@@ -1727,8 +1736,6 @@ function BldScores(bldid) {
 //call building info
 function bldinfo(n) {
 
-    hide('#collapseZero', menu_0);
-    hide('#collapseBegin', menu_begin);
     hide('#collapseTwo', menu_2);
     hide('#collapseTwoB', menu_2b);
     hide('#collapseSeven', menu_7);
@@ -1936,6 +1943,9 @@ function histogram_single_measure_values(j) {
         title: {
             text: title
         },
+        credits: {
+            enabled: false
+        },
         xAxis: {
             categories: description,
             lineColor: "#DCDCDC",
@@ -2004,7 +2014,7 @@ $('#table > tbody').on('click', 'tr', function() {
             Start_Chart1(index);            
             
             document.getElementsByTagName("img")[0].src = "img/bDA.png";
-            document.getElementsByTagName("h3")[0].innerHTML = "Buildings" + "<font color='#d3d3d3'>" + " | Energy </style>";
+            document.getElementsByTagName("h3")[0].innerHTML = "All Buildings" + "<font color='#d3d3d3'>" + " | Energy </style>";
 
             show('#collapseZero', menu_begin);
             show('#collapseModes', menu_modes);
@@ -2031,7 +2041,7 @@ $('#table > tbody').on('click', 'tr', function() {
             histogram_single_measure_values(index);
             
             document.getElementsByTagName("img")[0].src = "img/bDA.png";
-            document.getElementsByTagName("h3")[0].innerHTML = "Buildings" + "<font color='#d3d3d3'>" + " | "+ headers[index].display_name + "</style>";
+            document.getElementsByTagName("h3")[0].innerHTML = "All Buildings" + "<font color='#d3d3d3'>" + " | "+ headers[index].display_name + "</style>";
 
             show('#collapseZero', menu_begin);
             show('#collapseModes', menu_modes);
@@ -2052,6 +2062,8 @@ $('#table > tbody').on('click', 'tr', function() {
 function Overview(bldid) {
 
     hide('#collapseModes', menu_modes);
+    show('#collapseBegin', menu_begin);
+    show('#collapseOne', menu_1);
 
     var overview_categories=[];
     var overview_blddata=[];
@@ -2076,6 +2088,9 @@ function Overview(bldid) {
         chart: {
             polar: true,
             type: 'area'
+        },
+        credits: {
+            enabled: false
         },
 
         plotOptions: {
@@ -2179,6 +2194,9 @@ function call_oe2(_title, _units, _series, index) {
         title: {
             text: _title
         },
+        credits: {
+            enabled: false
+        },
         xAxis: {
             categories: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
             lineColor: "#DCDCDC",
@@ -2271,6 +2289,11 @@ function call_oeall2(_sort, _norm, _sortarea, _title, _units, index) {
         }
         bobs.push(b);
     }
+        bobs.sort((function(a, b){
+            if(a.bname < b.bname) return -1;
+            if(a.bname > b.bname) return 1;
+            return 0;
+        }))
 
     //sort
     if (_sort == 1) {
@@ -2346,10 +2369,16 @@ function call_oeall2(_sort, _norm, _sortarea, _title, _units, index) {
         title: {
             text: _title
         },
+        credits: {
+            enabled: false
+        },
         xAxis: {
             categories: bname_arr,
             lineColor: "#DCDCDC",
-            tickColor: "#DCDCDC"
+            tickColor: "#DCDCDC",
+            title: {
+                text: "Building Names"
+            },
         },
         yAxis: {
             gridLineColor: '#DCDCDC',
@@ -2408,7 +2437,7 @@ function call_oeall2(_sort, _norm, _sortarea, _title, _units, index) {
         },
         series: series
     })
-}, 1000)};
+}, 200)};
 
 //create scatter object
 function scatterobj() {
@@ -2835,25 +2864,32 @@ function Start_Chart3_Templates(){
 //go to scatter plot
 $(scatter_bt).on("click", function() {
     Start_Chart3_Buildings();
+    $('.table-responsive').show();
 })
 
 //go to building map
 $(bld_map_bt).on("click", function() {
     Start_Chart4();
+    $('.table-responsive').hide();
+    about.innerHTML = "Project Information";
+    about_content.innerHTML =
+        "<li>" + "Number of Buildings: " + buildings.length + "</li>" +
+        "<li>" + "Number of Use Types: " + array_temp.length + "</li>" +
+        "<li>" + "Area Range: " + project[0].area_min.toLocaleString() + " - " + project[0].area_max.toLocaleString() + " sqm" + "</li>"
+
 })
 
 function scatter_titles() {
     $(bread).find("li").slice(0).remove();
     if (sc_c == 1) {
-        bldname.innerHTML = "Buildings" + "<font color='#d3d3d3'>" + " | " + title_a + " vs. " + title_b + "</style>";
-        $(bread).append("<li>" + "<a onclick='Start_Chart3_Buildings()' href='#'>All Building Points</a>" + "</li>");
+        bldname.innerHTML = "Scatter Plot" + "<font color='#d3d3d3'>" + " | " + title_a + " vs. " + title_b + "</style>";
+        $(bread).append("<li>" + "<a onclick='Start_Chart3_Buildings()' href='#'>Scatter Plot</a>" + "</li>");
     } else if (sc_c == 2) {
         bldname.innerHTML = "Use Types" + "<font color='#d3d3d3'>" + " | " + title_a + " vs. " + title_b + "</style>";
-        $(bread).append("<li>" + "<a onclick='Start_Chart3_Templates()' href='#'>All Use Type Points</a>" + "</li>");
+        $(bread).append("<li>" + "<a onclick='Start_Chart3_Templates()' href='#'>Scatter Plot</a>" + "</li>");
     }
     $(bread).append("<li class='active'>" + title_a + " vs. " + title_b + "</li>");
 }
-
 
 //submit scatter function
 function submit_scatter() {
@@ -2889,6 +2925,9 @@ function submit_scatter() {
             },
             title: {
                 text: title_a + ' vs. ' + title_b
+            },
+            credits: {
+                enabled: false
             },
             xAxis: {
                 title: {
@@ -3067,6 +3106,9 @@ function submit_scatter() {
             },
             title: {
                 text: title_a + ' vs. ' + title_b
+            },
+            credits: {
+                enabled: false
             },
             xAxis: {
                 title: {
@@ -3666,7 +3708,9 @@ function temp_columns() {
         title: {
             text: temp_title
         },
-
+        credits: {
+            enabled: false
+        },
         subtitle: {
             text: 'Click the columns to view buildings'
         },
@@ -3759,11 +3803,21 @@ function temp_columns() {
 $(bld_col_bt).on("click", function() {
     console.log(default_index);
     $(bread).find("li").slice(0).remove();
-    $(bread).append("<li>" + "<a onclick='Start_Chart1(0)' href='#'>All Building Columns</a>" + "</li>");
-    $(bread).append("<li class='active'>" + "Energy" + "</li>");
+    $(bread).append("<li>" + "<a onclick='Start_Chart1(0)' href='#'>Bar Chart</a>" + "</li>");
+    $(bread).append("<li class='active'>" + "Energy" + "</li>")
+    $('.table-responsive').show();
+
+    about.innerHTML = "Project Information";
+    about_content.innerHTML =
+        "<li>" + "Number of Buildings: " + buildings.length + "</li>" +
+        "<li>" + "Number of Use Types: " + array_temp.length + "</li>" +
+        "<li>" + "Area Range: " + project[0].area_min.toLocaleString() + " - " + project[0].area_max.toLocaleString() + " sqm" + "</li>"
+
+
+
 
     //replace title
-    document.getElementsByTagName("h3")[0].innerHTML = "Buildings" + "<font color='#d3d3d3'>" + " | Energy" + "</style>";
+    document.getElementsByTagName("h3")[0].innerHTML = "Building" + "<font color='#d3d3d3'>" + " | Energy" + "</style>";
 
     row1.style.backgroundColor = "#f5f5f5";
 
@@ -3805,7 +3859,7 @@ $(bld_col_bt).on("click", function() {
 
 function Start_Chart2(){
     $(bread).find("li").slice(0).remove();
-    $(bread).append("<li>" + "<a onclick='Start_Chart2()' href='#'>All Use Type Columns</a>" + "</li>");
+    $(bread).append("<li>" + "<a onclick='Start_Chart2()' href='#'>Use Types</a>" + "</li>");
     $(bread).append("<li class='active'>" + "Energy" + "</li>");
 
     //replace title
@@ -3849,7 +3903,14 @@ function Start_Chart2(){
 
 //go to grouped column chart
 $(temp_col_bt).on("click", function() {
-    Start_Chart2();
+    Start_Chart2()
+    $('.table-responsive').show();
+    about.innerHTML = "Project Information";
+    about_content.innerHTML =
+        "<li>" + "Number of Buildings: " + buildings.length + "</li>" +
+        "<li>" + "Number of Use Types: " + array_temp.length + "</li>" +
+        "<li>" + "Area Range: " + project[0].area_min.toLocaleString() + " - " + project[0].area_max.toLocaleString() + " sqm" + "</li>"
+
 })
 
 
@@ -4202,6 +4263,9 @@ function call_oeall_comp(_sort) {
         title: {
             text: 'Normalized Annual Consumption'
         },
+        credits: {
+            enabled: false
+        },
         xAxis: {
             categories: bname_arr_2,
             lineColor: "#DCDCDC",
@@ -4519,6 +4583,9 @@ function temp_columns_comp() {
         title: {
             text: temp_title
         },
+        credits: {
+            enabled: false
+        },
 
         subtitle: {
             text: 'Click the columns to view buildings'
@@ -4648,6 +4715,9 @@ function histogram_walkability() {
         title: {
             text: 'Walkscore Distribution'
         },
+        credits: {
+            enabled: false
+        },
         xAxis: {
             categories: wk_description,
             lineColor: "#DCDCDC",
@@ -4740,6 +4810,9 @@ function histogram_bikeability() {
         title: {
             text: 'Bikescore Distribution'
         },
+        credits: {
+            enabled: false
+        },
         xAxis: {
             categories: bk_description,
             lineColor: "#DCDCDC",
@@ -4831,6 +4904,9 @@ function histogram_daylight() {
         },
         title: {
             text: 'Daylight Autonomy Distribution'
+        },
+        credits: {
+            enabled: false
         },
         xAxis: {
             categories: da_description,
@@ -4934,6 +5010,9 @@ function call_lcall(_metric, _title, _yaxis, _units) {
         title: {
             text: _title
         },
+        credits: {
+            enabled: false
+        },
         xAxis: {
             categories: lc_bname_arr,
             lineColor: "#DCDCDC",
@@ -5010,7 +5089,7 @@ function Start_Chart4(){
     hide('#collapseSix', menu_6);
     hide('#collapseSeven', menu_7);
     hide('#collapseEight', menu_8);
-    hide('#collapseNine', menu_9);
+    hide('#collapseNine', menu_9); 
 
     document.getElementsByTagName("img")[0].src = "img/UMI.png";
     about.innerHTML = "Project Information";
@@ -5026,8 +5105,11 @@ function Start_Chart4(){
 
     $(bread).find("li").slice(0).remove();
     
-    $(bread).append("<li>" + "<a onclick='Start_Chart4()' href='#'>All Building Map</a>" + "</li>");
+    $(bread).append("<li>" + "<a onclick='Start_Chart4()' href='#'>Building Map</a>" + "</li>");
     $(bread).append("<li class='active'>" + "Energy" + "</li>");
+    document.getElementsByTagName("h3")[0].innerHTML = "Building Map" + "<font color='#d3d3d3'>" + " | Site </style>";
+
+
 
     create_geodata();
     
@@ -5095,6 +5177,10 @@ function create_geodata(){
 
         title : {
             text : 'Annual Consumption'
+        },
+
+        credits: {
+            enabled: false
         },
 
         tooltip: {
