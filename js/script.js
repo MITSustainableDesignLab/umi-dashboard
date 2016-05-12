@@ -20,7 +20,7 @@ Highcharts.setOptions({
     }
 });
 
-
+var leftslider = 0
 
 //declaration of DOM variables
 
@@ -215,6 +215,8 @@ var array_temp_oe_eq_norm = [];
 var series_obj = [];
 
 var comp_level = [];
+var building_data = [];
+
 
 //what happens upon clicking the home button
 $(home_bt).on("click", function() {
@@ -946,7 +948,6 @@ function BuildList2(data) {
         project.push(prj);
 
         Start_Chart1(default_index);
-        console.log(project[0].avg_single_value_measures)
         // remove loading div
         listReady();
 
@@ -1825,7 +1826,7 @@ function building_time_series_measure_value(i) {
     row4.style.backgroundColor = "";
     row5.style.backgroundColor = "";
 
-    document.getElementsByTagName("img")[0].src = "img/bOE.png";
+    document.getElementsByTagName("img")[0].src = "img/OE.png";
     bldname.innerHTML = buildings[n].bname + "<font color='#d1d1d1'>" + " | Energy</style>";
 
     call_oe2('Monthly Consumption', 'Energy Consumption in kWh / month', buildings[n].time_series_measure[i], i);
@@ -1986,9 +1987,7 @@ function histogram_single_measure_values(j) {
 $('#table > tbody').on('click', 'tr', function() {
 
     var index = this.id;
-    console.log(index);
     var htype = headers[index].htype;
-    console.log(htype);
     
     
      if (n != null) {
@@ -3801,7 +3800,6 @@ function temp_columns() {
 
 //go to building column chart
 $(bld_col_bt).on("click", function() {
-    console.log(default_index);
     $(bread).find("li").slice(0).remove();
     $(bread).append("<li>" + "<a onclick='Start_Chart1(0)' href='#'>Bar Chart</a>" + "</li>");
     $(bread).append("<li class='active'>" + "Energy" + "</li>")
@@ -5109,6 +5107,10 @@ function Start_Chart4(){
     $(bread).append("<li class='active'>" + "Energy" + "</li>");
     document.getElementsByTagName("h3")[0].innerHTML = "Building Map" + "<font color='#d3d3d3'>" + " | Site </style>";
 
+    var sliderbox = document.createElement("sliderbox");
+    var currentDiv = document.getElementById("#container")
+    document.body.insertBefore(sliderbox, currentDiv);
+
 
 
     create_geodata();
@@ -5117,8 +5119,8 @@ function Start_Chart4(){
 
 function create_geodata(){
 
-    var building_geometries = [];
-    var building_data = [];
+    building_geometries = [];
+    building_data = [];
 
     function bldGeoArray() {
         this.type;
@@ -5171,17 +5173,50 @@ function create_geodata(){
     }
 
     building_array.features = building_geometries;
+    filtervalues = building_data.map(function(a) {return a.value;});
+
+    var max_s = (project[0].max_oe_norm+100)
+
+    var step1_s = 0
+    var step2_s = Math.round(max_s/4)
+    var step3_s = Math.round(max_s/3)
+    var step4_s = Math.round(max_s/2)
+    var step5_s = Math.round(max_s)
+
+    $('.range-slider').jRange({
+    from: 0,
+    to: max_s,
+    scale: [step1_s,step2_s,step3_s,step4_s,step5_s],
+    isRange : true,
+        });
+
+
+    rangeInput = document.getElementById("rangevalue");
+    rangeInput2 = document.getElementById("rangevalue").textContent;
+    leftslider = document.getElementsByClassName("pointer-label low");
+
+    rangeInput.addEventListener("change", function() {
+    document.getElementById("rangevalue").textContent = rangeInput.value;
+    }, false);
+
 
     // Initiate the chart
     $('#container').highcharts('Map', {
 
         title : {
-            text : 'Annual Consumption'
+            text : ''
         },
 
         credits: {
             enabled: false
         },
+
+        chart: {
+            marginTop: 20,
+            marginLeft: 1,
+            borderWidth: 0,
+        },
+
 
         tooltip: {
             formatter: function() {
@@ -5233,6 +5268,7 @@ function create_geodata(){
             mapData: building_array,
             joinBy: ['name', 'code'],
             name: 'Energy',
+            nullColor: '#cccccc',
             states: {
                 hover: {
                     color: '#ffe19f'
@@ -5242,3 +5278,36 @@ function create_geodata(){
     });
     
 }
+
+
+
+
+
+if (leftslider != 0) {
+    leftslider.addEventListener("change", function() {
+    $('#container').highcharts().series[0].update( {
+                            data: filter(building_data)
+                        })
+    }, false);
+}
+
+
+
+
+
+
+
+
+function filter(data){
+for (i = 0; i < filtervalues.length; i++) {
+    if (filtervalues[i] < Number(rangevalue.value.split(",")[0])|| filtervalues[i] > Number(rangevalue.value.split(",")[1])){
+        data[i].value = null;
+    } else {data[i].value = filtervalues[i]}}
+return data;
+}
+
+function updatemap() {
+    $('#container').highcharts().series[0].update( {
+                            data: filter(building_data)
+                        })};
+
