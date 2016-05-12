@@ -11,6 +11,7 @@
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/dashboard.css" rel="stylesheet">
+    <link href="css/jquery.range.css" rel="stylesheet">
 
     <link href="css/custom.css" rel="stylesheet">
 
@@ -54,9 +55,6 @@
 
 
     <!-- Modal Compliance-->
-
-
-
 
 
 
@@ -463,6 +461,11 @@
           </div>
           <br>
 
+          <div class="box" id="sliderbox" onchange="updatemap()">
+            <div class="range-slider" id="rangeslider" type="hidden" value="25,75" onchange="rangevalue.value=value" ></div>
+            <output id="rangevalue"></output>
+          </div>
+
           <!-- Table drawing statically with dynamic vars -->
 
           <div class="table-responsive">
@@ -530,9 +533,8 @@
 
 
 
-
-
-    <script type="text/javascript" src="bin/jquery-2.1.1.min.js"></script>
+    <script src="bin/jquery-2.1.1.min.js"></script>
+    <script src="bin/jquery.range.js"></script>
     <script type="text/javascript" src="bin/highcharts.js"></script>
     <script type="text/javascript" src="bin/highcharts-more.src.js"></script>
     <script type="text/javascript" src="bin/map.js"></script>
