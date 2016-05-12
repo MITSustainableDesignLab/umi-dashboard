@@ -207,7 +207,7 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
          
     }
   
-    document.getElementById('files').addEventListener('change', handleFileSelect, false); 
+    //document.getElementById('files').addEventListener('change', handleFileSelect, false); 
 
 } else {
 
@@ -345,7 +345,7 @@ function callback(a,b){
 
             var model = (function() {
 
-                var URL = window.webkitURL || window.mozURL || window.URL;
+                var URL = window.URL || window.mozURL || window.URL;
                 var acount = 0;
                 var bcount = 0;
 
