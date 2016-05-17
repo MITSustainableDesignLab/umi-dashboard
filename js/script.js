@@ -2885,6 +2885,7 @@ $(bld_map_bt).on("click", function() {
         "<li>" + "Number of Buildings: " + buildings.length + "</li>" +
         "<li>" + "Number of Use Types: " + array_temp.length + "</li>" +
         "<li>" + "Area Range: " + project[0].area_min.toLocaleString() + " - " + project[0].area_max.toLocaleString() + " sqm" + "</li>"
+    $(".box").trigger("change")
 
 })
 
@@ -5124,7 +5125,6 @@ function Start_Chart4(){
     document.body.insertBefore(sliderbox, currentDiv);
 
 
-
     create_geodata();
     
 }
@@ -5211,7 +5211,7 @@ function create_geodata(){
     document.getElementById("rangevalue").textContent = rangeInput.value;
     }, false);
 
-    rangeInput.value = "0.00," + String(2000.00)
+    rangeInput.value = "0.00," + String(max_s)
     
 
 
@@ -5304,7 +5304,6 @@ if (leftslider != 0) {
                             data: filter(building_data)
                         })
     }, false);
-    rangeInput.value = "0.00," + String(2000.00);
 }
 
 
