@@ -1021,6 +1021,7 @@ function Start_Chart1(index) {
     $(sort).html('')
     $(yaxis0).html(' OE')
     
+    $('.box').hide();
    
     // --------------- Dynamic ---------------------
     
@@ -1097,7 +1098,7 @@ function Start_Chart1(index) {
     var un_1 = "Energy Consumption in kWh / year";
     var un_2 = "Energy Consumption in kWh / sqm / year";
 
-    call_oeall2(0, 0, 0, ti_1, un_1, index);
+    call_oeall2(2, 0, 0, ti_1, un_1, index);
 
     //mode 1 sorting
 
@@ -1758,6 +1759,8 @@ function bldinfo(n) {
     $(bread).find("li").slice(1).remove();
     $(bread).append("<li>" + "<a onclick='building_overview()' href='#'>" + buildings[n].bname + "</a>" + "</li>");
     $(bread).append("<li class='active'>" + "Overview" + "</li>");
+    $('.box').hide();
+    $('.table-responsive').show();
 
     //load building information
     about.innerHTML = "Building Information";
@@ -1781,6 +1784,8 @@ function bldinfo(n) {
 
 
 function building_overview() {
+
+    $('.box').hide();
     
     row1.style.backgroundColor = "white";
     row1.style.color = "black";
@@ -2082,7 +2087,7 @@ function Overview(bldid) {
    
     $('#container').highcharts({
 
-        colors: ['#00A99D', '#ED1E79'],
+        colors: ['#00A99D', '#a9a9a9'],
 
         chart: {
             polar: true,
@@ -2115,11 +2120,11 @@ function Overview(bldid) {
         },
 
         title: {
-            text: 'Overview Graph'
+            text: buildings[bldid].bname
         },
 
         subtitle: {
-            text: 'Click the dots to view detailed metrics'
+            text: ''
         },
 
         xAxis: {
@@ -2142,19 +2147,19 @@ function Overview(bldid) {
             }
         },
 
-        tooltip: {
-            shared: true,
-            formatter: function() {
-                    var s = ''
-                    for(j = 0; j < headers.length; j++){        
-                        if (this.x == headers[j].hname)
-                            s = '<b>' + headers[j].display_name +'</b>' + '<br/>' + buildings[bldid].bname + ': ' + 
-                                buildings[bldid].single_value_measure[j].toLocaleString() + '%' + '<br/>' +
-                                'Average' + ': ' + project[0].avg_single_value_measures[j].toLocaleString() + headers[j].unit;
-                    }
-                    return s;
-            }
-        },
+        //tooltip: {
+            //shared: false,
+            //formatter: function() {
+                    //var s = ''
+                    //for(j = 0; j < headers.length; j++){        
+                        //if (this.x == headers[j].hname)
+                            //s = '<b>' + headers[j].display_name +'</b>' + '<br/>' + buildings[bldid].bname + ': ' + 
+                                //buildings[bldid].single_value_measure[j].toLocaleString() + '%' + '<br/>' +
+                                //'Average' + ': ' + project[0].avg_single_value_measures[j].toLocaleString() + headers[j].unit;
+                    //}
+                   // return s;
+            //}
+        //},
 
         legend: {
             align: 'bottom',
@@ -2164,13 +2169,16 @@ function Overview(bldid) {
         },
 
         series: [{
-            name: buildings[bldid].bname,
+            name: 'Value',
             data: overview_blddata,
             pointPlacement: 'on'
         }, {
             name: 'Average',
             data: overview_avgdata,
-            pointPlacement: 'on'
+            pointPlacement: 'off',
+            dashStyle: 'ShortDash',
+            fillOpacity: 0.4,
+            lineWidth: 2
         }]
     });
 };
@@ -2862,12 +2870,14 @@ function Start_Chart3_Templates(){
 
 //go to scatter plot
 $(scatter_bt).on("click", function() {
-    Start_Chart3_Buildings();
+    Start_Chart3_Buildings()
     $('.table-responsive').show();
+    $('.box').hide();
 })
 
 //go to building map
 $(bld_map_bt).on("click", function() {
+    $('.box').show();
     Start_Chart4();
     $('.table-responsive').hide();
     about.innerHTML = "Project Information";
@@ -3032,7 +3042,7 @@ function submit_scatter() {
                         states: {
                             hover: {
                                 enabled: true,
-                                lineColor: 'white'
+                                lineColor: 'white',
                             }
                         }
                     },
@@ -3804,6 +3814,7 @@ $(bld_col_bt).on("click", function() {
     $(bread).append("<li>" + "<a onclick='Start_Chart1(0)' href='#'>Bar Chart</a>" + "</li>");
     $(bread).append("<li class='active'>" + "Energy" + "</li>")
     $('.table-responsive').show();
+    $('.box').hide();
 
     about.innerHTML = "Project Information";
     about_content.innerHTML =
@@ -3903,6 +3914,7 @@ function Start_Chart2(){
 $(temp_col_bt).on("click", function() {
     Start_Chart2()
     $('.table-responsive').show();
+    $('.box').hide();
     about.innerHTML = "Project Information";
     about_content.innerHTML =
         "<li>" + "Number of Buildings: " + buildings.length + "</li>" +
@@ -5199,6 +5211,9 @@ function create_geodata(){
     document.getElementById("rangevalue").textContent = rangeInput.value;
     }, false);
 
+    rangeInput.value = "0.00," + String(2000.00)
+    
+
 
     // Initiate the chart
     $('#container').highcharts('Map', {
@@ -5289,6 +5304,7 @@ if (leftslider != 0) {
                             data: filter(building_data)
                         })
     }, false);
+    rangeInput.value = "0.00," + String(2000.00);
 }
 
 
