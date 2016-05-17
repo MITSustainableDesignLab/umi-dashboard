@@ -1,4 +1,5 @@
 //highcharts trigger elements
+//test
 $(document).ready(function() {
     if ($("[rel=tooltip]").length) {
         $("[rel=tooltip]").tooltip();
