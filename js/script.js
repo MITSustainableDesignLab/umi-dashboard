@@ -458,6 +458,7 @@ function BuildList2(data) {
             bld.oe_el = [];
             bld.oe_he = [];
             bld.oe_co = [];
+            bld.oe = [];
 
             for (j = 0; j < 12; j++) {
 
@@ -465,8 +466,10 @@ function BuildList2(data) {
                 bld.oe_el.push(Math.round(data.features[i].properties.OELighting[j]));
                 bld.oe_he.push(Math.round(data.features[i].properties.OEHeating[j]));
                 bld.oe_co.push(Math.round(data.features[i].properties.OECooling[j]));
+                bld.oe.push(Math.round(data.features[i].properties.OETotal[j]));
             }
            
+           	bld.oe = bld.oe.reduce((a, b) => a + b, 0);
              
             //This array has a single number for each of the performance measures
             // For single value measures (e.g. Walkability): The single number is the value in this performance measure
@@ -525,7 +528,7 @@ function BuildList2(data) {
             bld.lc_en = Math.round(data.features[i].properties.LCEnergy / data.features[i].properties.LCLength) || null;
             bld.lc_ca = Math.round(data.features[i].properties.LCCarbon / data.features[i].properties.LCLength) || null;
 
-            bld.oe = 0;
+   
             bld.oe_co_all = 0;
             bld.oe_he_all = 0;
             bld.oe_el_all = 0;
@@ -533,11 +536,6 @@ function BuildList2(data) {
 
 
             for (j = 0; j < 12; j++) {
-
-                bld.oe += Math.round(bld.oe_eq[j]);
-                bld.oe += Math.round(bld.oe_el[j]);
-                bld.oe += Math.round(bld.oe_he[j]);
-                bld.oe += Math.round(bld.oe_co[j]);
 
                 bld.oe_co_all += Math.round(bld.oe_co[j]);
                 bld.oe_he_all += Math.round(bld.oe_he[j]);
@@ -550,7 +548,7 @@ function BuildList2(data) {
             bld.oe_el_norm = [];
             bld.oe_eq_norm = [];
 
-            bld.oe_norm = roundToOne(bld.oe / bld.area);
+            bld.oe_norm = Math.round(bld.oe / bld.area);
 
 
             for (j = 0; j < 12; j++) {
