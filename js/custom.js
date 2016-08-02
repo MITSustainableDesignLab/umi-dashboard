@@ -48,7 +48,6 @@
 
                     // HERE EDIT
                     // launchBuild(zipEntry.asText());
-                    console.log(zipEntry.asText());
                     var zipJson = JSON.parse(zipEntry.asText());
 
                     launchBuild(zipJson);
