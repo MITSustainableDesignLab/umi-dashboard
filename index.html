@@ -25,13 +25,13 @@
         <div id="introModalContent" class="modal-content">
           
           <div class="modal-header">
-            <img src="img/LabLogo.png" width="300px" height="auto" style="margin-bottom:20px;"></img>
+            <div><img class="lablogo" src="img/LabLogo.png" width="300px" height="auto" style="margin-bottom:20px;"></img></div>
             <div style="width:100%;text-align:center;"><img src="img/UMI.png" width="245px" height="auto"></img></div>
           </div>
           
           <div class="modal-body" id="mBody_compliance">
             <h2>Hello World!</h2>
-            <p>Welcome to UMI Dashboard, a prototypical energy simulation results viewer based on our Rhino-integrated Urban Modeling Interface [UMI]. UMI Dashboard is a web-powered service that allows quick, beautiful and interactive visualizations of simulation results stored in UMI files. Launch an example file with the MIT Model Data, or load your own project to get started.
+            <p>Welcome to UMI Dashboard, an interactive web application for simulation result processing and distribution. Based on our Rhino-integrated Urban Modeling Interface [UMI], the UMI Dashboard is a web-powered service that allows quick, beautiful and interactive visualizations of simulation results stored in UMI files. Launch an example file or load your own project to get started.
           </div>
 
           <div class="modal-footer">
@@ -41,7 +41,7 @@
             </div>
         
             <div class="row">
-              <div class="file-upload-info">Projects loaded from file are never uploaded or stored on a server or in a database. Files are simply accessed from your computer for the simulation.</div>
+              <div class="file-upload-info">Projects loaded from file are never uploaded or stored on a server or in a database. Files are simply accessed from your computer for the simulation. For best results use Google Chrome.</div>
               <input id="zipinput_test" type="file"  name="files[]" multiple />
             </div>
             
@@ -70,7 +70,7 @@
             </button>
           <a id="prname" class="navbar-brand">Project name</a>
       </div>
-    
+
     <!--Right Side Buttons - W/ hamburger collapse for small screen  -->
       <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -97,9 +97,32 @@
 
     <!--Sidebar-->
       <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
+        <div class="sidebar span5">
         <ul class="nav nav-sidebar">
-            <img class="center-block" src="img/UMI.png" alt="UMI" width="auto" height="140px"></img>
+        <div class="panel-body">
+                    <div id="button_group" class="btn-group-vertical btn-block" data-toggle="buttons">
+                      
+                      <label class="btn btn-default active" id="bld_home" href="#" onclick="Start_Home()" >
+                        <input type="radio" class="btn btn-default" checked>Home
+                      </label>
+                      
+                      <label class="btn btn-default" id="temp_Map" href="#" onclick="SetMode('Map')" >
+                        <input type="radio" class="btn btn-default">Map View
+                      </label>
+                      
+                      <label class="btn btn-default" id="bld_Data" href="#" onclick="SetMode('Bar')">
+                        <input type="radio" class="btn btn-default">Data View
+                      </label>
+                      <div style="font-size:10px">UMI Experimental</div>
+                      <label class="btn btn-default" id="scatter_bt" href="#" onclick="Start_Scatter()">
+                        <input type="radio" class="btn btn-default">Scatter Plot
+                      </label>
+
+
+                    </div>
+                  </div>
+
+            <!--<img class="center-block" src="img/UMI.png" alt="UMI" width="auto" height="100"></img>-->
           </ul>
 
         <!--Sidebar Info Boxes-->
@@ -140,42 +163,6 @@
               
 
 
-
-            <!-- menu_begin - Chart Type-->
-              <div id="menu_begin" class="panel panel-default hidden">
-                
-                <div class="panel-heading">
-                  <li>
-                    <a data-toggle="collapse" data-parent="#accordion" href="project.json.html#collapseBegin">
-                      Chart Type
-                    </a>
-                  </li>
-                </div>
-                
-                <div id="collapseBegin" class="panel-collapse collapse">
-                  <div class="panel-body">
-                    <div id="button_group" class="btn-group-vertical btn-block" data-toggle="buttons">
-                      
-                      <label class="btn btn-default active" id="bld_col_bt" href="#" >
-                        <input type="radio" class="btn btn-default" checked>Building Columns
-                      </label>
-                      
-                      <label class="btn btn-default" id="temp_col_bt" href="#" >
-                        <input type="radio" class="btn btn-default">Use Type Columns
-                      </label>
-                      
-                      <label class="btn btn-default" id="scatter_bt" href="#">
-                        <input type="radio" class="btn btn-default">Scatter Plot
-                      </label>
-                      
-                      <label class="btn btn-default" id="bld_map_bt" href="#">
-                        <input type="radio" class="btn btn-default">Building Map
-                      </label>
-
-                    </div>
-                  </div>
-                </div>
-              </div>
               
 
 
@@ -451,7 +438,7 @@
         </div>
 
 
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        <div class="col-sm-11 col-sm-offset-1 col-md-11 col-md-offset-1 col-lg-11 col-lg-offset-1 main" id='canvas' style="padding-top: 0px; padding-right: 0px;padding-bottom: 0px;">
           <ol id="bread" class="breadcrumb">
             <li><a href="UMI_D-file=project.json.html#">All Buildings</a></li>
             <li class="active">Energy</li>
@@ -460,8 +447,7 @@
           <div class="container-fluid" id= "container" style="width:100%; height:490px;">
           </div>
           <br>
-
-          <div class="box" id="sliderbox" onchange="updatemap()">
+          <div class="box" id="sliderbox">
             <div class="range-slider" id="rangeslider" type="hidden" value="25,75" onchange="rangevalue.value=value" ></div>
             <output id="rangevalue"></output>
              <div class="sliderboxdrop" id="sliderboxdrop" >
@@ -546,10 +532,11 @@
     <script type="text/javascript" src="bin/data.js"></script>
     <script type="text/javascript" src="bin/drilldown.js"></script>
     <script type="text/javascript" src="css/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/script.js"></script>
+    <script type="text/javascript" src="js/script.js?v=2"></script>
     <script type="text/javascript" src="bin/exporting.js"></script>
     <script type="text/javascript" src="js/jszip.js"></script>
     <script type="text/javascript" src="example.json"></script>
     <script type="text/javascript" src="js/custom.js"></script>
+    <script src="https://highcharts.github.io/pattern-fill/pattern-fill-v2.js"></script>
   </body>
 </html>

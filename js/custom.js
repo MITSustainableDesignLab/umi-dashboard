@@ -16,7 +16,9 @@
 
     // see http://www.html5rocks.com/en/tutorials/file/dndfiles/
 
-    var files = evt.target.files;
+   files = evt.target.files;
+
+
     for (var i = 0, f; f = files[i]; i++) {
 
       var reader = new FileReader();
@@ -44,7 +46,9 @@
             $.each(zip.files, function (index, zipEntry) {
 
                 var checkName = zipEntry.name;
-                if(checkName.indexOf('sdl-common/','aux-files/') >= 0) {
+
+                // this is key for parsing and storing files.
+                if(checkName == 'sdl-common/project.json') {
 
                     // HERE EDIT
                     // launchBuild(zipEntry.asText());
@@ -98,7 +102,7 @@ $('#changeFile').click(function() {
     $('#introModal').modal({
       backdrop: 'static',
       keyboard: false,
-      show: true,
+      //show: true,
     });
 });
 
@@ -121,7 +125,7 @@ function launchBuild(json) {
         // -----------Tariq--------------
         BuildList2(json);
         // ------------------------------
-    }, 1000);
+    }, 500);
    
     // $('#introModal').modal('hide');
 }
@@ -135,6 +139,7 @@ function listReady() {
 function emptyVariables() {
     buildings = [];
     project = [];
+    headers = [];
 
     array_bname = [];
     array_wwr = [];
@@ -161,6 +166,7 @@ function emptyVariables() {
     array_temp_oe_he = [];
     array_temp_oe_el = [];
     array_temp_oe_eq = [];
+    array_single_value_measures = [];
 
     array_temp_oe_norm = [];
     array_temp_oe_co_norm = [];
