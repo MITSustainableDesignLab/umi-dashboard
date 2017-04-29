@@ -5562,6 +5562,10 @@ function SetMode(input){
 	}
 }
 
+function SetMode2(input){
+makeBoxChart(data,'#scoremap');
+}
+
 
 
 OEpressed = 0
@@ -6474,12 +6478,128 @@ function ScatterButtonY(title){
 }
 
 
+function add(a, b) {
+    return a + b;
+  }
+
+
+function MakeMetric(_data,_metric){
+
+      var values = [];
+      var IDs = []
+
+      for (j = 0; j < _data["features"].length; j++) {
+              var value = _data["features"][j].properties[_metric];
+              values.push(value);
+              IDs.push(j)
+        }
+
+      var values = values.sort(function(a, b){return a - b});
+      var values = values.filter(function(n){ return n != undefined }); 
+
+      var min = values[0];
+      var max = values[(values.length-1)];
+      var sum = values.reduce(add,0);
+      var avg = Math.round(sum/values.length);
+      var high= values[Math.round(((values.length*0.75)-1))];
+      var low = values[Math.round(((values.length*0.25)-1))];
+      return {
+        values: values,
+        name: _metric,
+        IDs: IDs,
+        min: min,
+        max: max,
+        sum: avg,
+        high: high,
+        low: low
+      };
+};
+    
+
+
+function makeBoxChart(_data,_location) { 
+  metrics = [];
+  for (i in headers){
+    metrics.push(MakeMetric(_data,headers[i].hname))
+    metrics[i].name = headers[i].display_name ;
+  };
+
+  entries = []
+
+
+    var colors = ['#4d8eff','#f04591','#fdc22e','#25b5ab','#8c8c8c','#8085e9','#dd87dd'];
+  /// low lowavg avg highavg high 
 
 
 
+  $('#scoremap').highcharts({
+    chart: {
+        type: 'boxplot'
+    },
 
+    credits: {
+            enabled: false
+        },
 
+    title: {
+        text: " Observations"
+    },
 
+    legend: {
+        enabled: false
+    },
+
+    xAxis: {
+        categories: '',
+        title: {
+            text: ''
+        }
+    },
+
+    yAxis: {
+        title: {
+            text: ''
+        },
+        plotLines: [{
+                color: '#7E7E7E',
+                dashStyle: 'longdash',
+                value: 500, // Insert your average here
+                width: '1',
+                zIndex: 1,// To not get stuck below the regular plot lines
+                label: {
+                    align: "top",
+                    text: "",
+                    style:{
+                        color:'#000000'
+                    }
+                }
+              }]
+    },
+
+    plotOptions: {
+        boxplot: {
+             //pointWidth: 20,
+          colorByPoint: true,
+          //fillColor: '#F0F0E0',
+                lineWidth: 2,
+                medianWidth: 1,
+                stemColor: '#000000',
+                stemDashStyle: 'dot',
+                stemWidth: 1,
+                whiskerLength: '20%',
+                whiskerWidth: 3 
+            }
+    },
+
+    /// low lowavg avg highavg high 
+
+    series: [{
+        name: 'Observations',
+        data: entries,
+    }]
+
+});
+}
 
 
 

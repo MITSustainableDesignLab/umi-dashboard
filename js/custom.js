@@ -1,5 +1,6 @@
 // var new_zip = new JSZip();
 
+
 (function () {
   if (!window.FileReader || !window.ArrayBuffer) {
     $("#error_block").removeClass("hidden").addClass("show");
@@ -52,8 +53,8 @@
 
                     // HERE EDIT
                     // launchBuild(zipEntry.asText());
-                    var zipJson = JSON.parse(zipEntry.asText());
-
+                   zipJson = JSON.parse(zipEntry.asText());
+                    data = MillSource(zipJson);
                     launchBuild(zipJson);
                     // console.log(zipJson);
                     // console.log(JSON.parse(zipEntry.asText()));
@@ -119,7 +120,8 @@ function launchBuild(json) {
     emptyVariables();
     // add loading feature 
     $('#introModalContent').append("<div class='loading-modal'><div class='row'><img src='img/umi-loading.gif'></div><div class='row' style='padding-top:20px;'><span class='btn btn-default disabled'>LOADING SIMULATION DATA</span></div></div>");
-
+    zipJson = json
+    data = MillSource(json);
     // 
     setTimeout(function() {
         // -----------Tariq--------------
@@ -419,3 +421,42 @@ function callback(a,b){
                     }
                 };
             })();
+
+
+
+function MillSource(_project){
+    var EUIlist = [], DAlist = [], GFAlist = [], OClist = [], OElist = [];
+
+    site = _project;
+    
+    function add(a, b) {return a + b;}
+
+    for (j in site.features) {
+        var building = site.features[j].properties;
+
+        building["OEYear"] = Math.round(building.OETotal.reduce((a, b) => a + b, 0));
+        building["DaylitArea"] = building["DaylitArea"]*100
+        building["Energy"] = Math.round(building["OEYear"]/building.GrossFloorArea);
+        building["DaylitArea"] = Math.round(building["DaylitArea"])
+        building["GrossFloorArea"] = Math.round(building["GrossFloorArea"])
+        if (building["Energy"] == 0){
+            building["Energy"] = null;
+        }
+
+        OElist.push(building.OEYear);
+        GFAlist.push(building.GrossFloorArea);
+        EUIlist.push(building.Energy);
+        DAlist.push(building.DaylitArea);
+        OClist.push(building.Occupancy);
+    }
+
+    site["count"] = site.features.length;
+    site["siteEnergy"] = OElist.reduce(add, 0);
+    site["siteEUI"] = Math.round(EUIlist.reduce((a, b) => a + b, 0)/site.count);
+    site["siteDA"] = Math.round(DAlist.reduce((a, b) => a + b, 0)/site.count);
+    site["siteFloorArea"] = GFAlist.reduce(add, 0);
+    site["siteAvgFloorArea"] = Math.round(GFAlist.reduce((a, b) => a + b, 0)/site.count);
+    site["siteOccupancy"] = OClist.reduce(add, 0);
+    site["siteOccDen"] = Math.round((site["siteFloorArea"]/site["siteOccupancy"])*10)/10;
+  return site
+};
