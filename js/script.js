@@ -5592,10 +5592,6 @@ function SetMode(input){
   }
 }
 
-function SetMode2(input){
-makeBoxChart(data,'#scoremap');
-}
-
 
 Button0Pressed = 0
 
@@ -6544,6 +6540,60 @@ function add(a, b) {
     return a + b;
   }
 
+function MillTemplates(_project){
+
+    var site = _project;
+
+    function onlyUnique(value, index, self) { return self.indexOf(value) === index;}
+    function add(a, b) {return a + b;}
+
+    var TemplateList = [], UseTypeList = [], UseTypeOccList = [], UseTypeEUI = []
+
+    for (j in site.features) {
+        var building = site.features[j].properties;
+        TemplateList.push(building.TemplateName);
+        UseTypeList.push(building.UseType);
+    }
+
+    site["siteTemplates"] = TemplateList.filter( onlyUnique );
+    site["siteUseType"] = UseTypeList.filter( onlyUnique );
+    site["siteUseTypeCount"] = site["siteUseType"].length;
+
+    
+
+    for (t in site.siteUseType){
+        var usecoutlist = [];
+        var EUIlist = [];
+        for (i in site.features) {
+            var building = site.features[i].properties;
+            if (site.siteUseType[t] == building.UseType){
+                usecoutlist.push(building.Occupancy);
+            }
+        }
+
+        UseTypeOccList.push(usecoutlist.reduce(add, 0));
+        UseTypeEUI.push(Math.round((EUIlist.reduce(add, 0))/EUIlist.length));
+    }
+
+    for (b=0; b< headers.length;++b){
+      var avg = [];
+      for (g in site.siteUseType){
+      var usecoutlist = []
+        for (h in site.features){
+          var building = site.features[h].properties;
+          if (site.siteUseType[g] == building.UseType){
+                  usecoutlist.push(building[headers[b].hname]);
+              }
+          }
+      avg.push(Math.round(usecoutlist.reduce(add, 0)/usecoutlist.length));
+      }
+      site['UseType'+headers[b].hname] = avg
+    }
+
+    site["siteUseTypeOcc"] = UseTypeOccList;
+
+};
+
 
 function MakeMetric(_data,_metric){
 
@@ -6569,6 +6619,7 @@ function MakeMetric(_data,_metric){
         values: values,
         name: _metric,
         IDs: IDs,
+        avg: avg,
         min: min,
         max: max,
         sum: avg,
@@ -6576,93 +6627,100 @@ function MakeMetric(_data,_metric){
         low: low
       };
 };
-    
+
+function SetMode2(input){
+  for (i= 0; i < headers.length; i++){
+    MakeMetric(data,headers[i].hname)
+  }
+  MillTemplates(data);
+  MakeBarByTemplate('Energy')
+//MakeBarByTemplate();
+}
 
 
-function makeBoxChart(_data,_location) { 
-  metrics = [];
-  for (i in headers){
-    metrics.push(MakeMetric(_data,headers[i].hname))
-    metrics[i].name = headers[i].display_name ;
+function MakeBarByTemplate(_metric){
+
+  var series = [];
+  var drilldown = [];
+  var entry = []
+
+  for (i=0; i < data.siteUseType.length; i++){
+    console.log(i);
+    entry.push({
+      name: data.siteUseType[i],
+      y: site['UseType'+_metric][i],
+      drilldown: data.siteUseType[i]
+    })
+  }
+
+  series.name = _metric;
+  series.colorByPoint = true;
+  series.data = entry;
+
+  for (i=0; i < data.siteUseType.length; i++){
+    var input = []
+
+    for (h in site.features){
+      var building = site.features[h].properties;
+        if (site.siteUseType[i] == building.UseType){
+         input.push([building.Name,building[_metric]]);
+       }
+    }
+
+    drilldown.push({
+      name: data.siteUseType[i],
+      id: data.siteUseType[i],
+      data: input
+    });
   };
 
-  entries = []
-
-
-    var colors = ['#4d8eff','#f04591','#fdc22e','#25b5ab','#8c8c8c','#8085e9','#dd87dd'];
-  /// low lowavg avg highavg high 
-
-
-
+  console.log(series);
+  console.log(drilldown);
+  
   $('#scoremap').highcharts({
     chart: {
-        type: 'boxplot'
+        type: 'column'
     },
-
-    credits: {
-            enabled: false
-        },
-
     title: {
-        text: " Observations"
+        text: 'Browser market shares. January, 2015 to May, 2015'
     },
+    subtitle: {
+        text: 'Click the columns to view versions. Source: <a href="http://netmarketshare.com">netmarketshare.com</a>.'
+    },
+    xAxis: {
+        type: 'category'
+    },
+    yAxis: {
+        title: {
+            text: 'Total percent market share'
+        }
 
+    },
     legend: {
         enabled: false
     },
-
-    xAxis: {
-        categories: '',
-        title: {
-            text: ''
+    plotOptions: {
+        series: {
+            borderWidth: 0,
+            dataLabels: {
+                enabled: true,
+                format: '{point.y:.1f}%'
+            }
         }
     },
 
-    yAxis: {
-        title: {
-            text: ''
-        },
-        plotLines: [{
-                color: '#7E7E7E',
-                dashStyle: 'longdash',
-                value: 500, // Insert your average here
-                width: '1',
-                zIndex: 1,// To not get stuck below the regular plot lines
-                label: {
-                    align: "top",
-                    text: "",
-                    style:{
-                        color:'#000000'
-                    }
-                }
-              }]
+    tooltip: {
+        headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
     },
 
-    plotOptions: {
-        boxplot: {
-             //pointWidth: 20,
-          colorByPoint: true,
-          //fillColor: '#F0F0E0',
-                lineWidth: 2,
-                medianWidth: 1,
-                stemColor: '#000000',
-                stemDashStyle: 'dot',
-                stemWidth: 1,
-                whiskerLength: '20%',
-                whiskerWidth: 3 
-            }
-    },
+    series: [series],
 
-    /// low lowavg avg highavg high 
-
-    series: [{
-        name: 'Observations',
-        data: entries,
-    }]
-
-});
-}
-
+    drilldown: {
+      series: drilldown
+         }
+  });
+};
 
 
 
