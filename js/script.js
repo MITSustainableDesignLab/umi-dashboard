@@ -488,7 +488,7 @@ function bldDataObj() {
   this.co;
   this.da;
   this.wa;
-  this.Energy;
+  this.oe_norm;
   this.oe_eq;
   this.oe_eq_norm;
   this.oe_el;
@@ -532,7 +532,7 @@ function myFunction() {
 
 // parsing JSON dynamically
 function BuildList2(data) {
-  jsondata = data 
+
   for (i = 0; i < data.header.length; i++) {
 
     var head = new headerObj();
@@ -563,10 +563,6 @@ function BuildList2(data) {
     var bld = new bldDataObj();
 
     bld.bid = data.features[i].id;
-
-    for (b =0; b < headers.length; ++b){
-      bld[headers[b]] = 0;
-    }
 
     // CHECK FOR ERRORS         
     // If floor area doesn't exist OR no energy data exists,
@@ -674,16 +670,15 @@ function BuildList2(data) {
     foo = bld.time_series_measure_sum_categories
 
     // set missing values to NULL instead of UNDEFINED, otherwise Highcharts messes up spider chart
-    bld.MOWalkability = data.features[i].properties.MOWalkability || null;
-    bld.MOBikeability = data.features[i].properties.MOBikeability || null;
-    bld.DaylitArea = (data.features[i].properties.DaylitArea*100) || null;
+    bld.mo_walk = data.features[i].properties.MOWalkability || null;
+    bld.mo_bike = data.features[i].properties.MOBikeability || null;
+    bld.da = (data.features[i].properties.DaylitArea*100) || null;
 
     //------------------- Dynamic--------------------
     // CAUTION: Life Cycle is devided by Life Cycle Length overhere!
     // Embodied Energy and Carbon is already in kWh
-    bld.LCEnergy = Math.round(data.features[i].properties.LCEnergy) || null;
-    bld.LCCarbon = Math.round(data.features[i].properties.LCCarbon) || null;
-    bld.NewMetric = Math.round(data.features[i].properties.NewMetric) || null;
+    bld.lc_en = Math.round(data.features[i].properties.LCEnergy) || null;
+    bld.lc_ca = Math.round(data.features[i].properties.LCCarbon) || null;
 
     //bld.oe = 0;
     bld.oe_co_all = 0;
@@ -705,7 +700,7 @@ function BuildList2(data) {
     bld.oe_el_norm = [];
     bld.oe_eq_norm = [];
 
-    bld.Energy = Math.round(bld.oe / bld.area);
+    bld.oe_norm = Math.round(bld.oe / bld.area);
 
 
     for (j = 0; j < 12; j++) {
@@ -4616,75 +4611,51 @@ function Start_Home(index) {
 
   midcard.id = "midcard"
 
-  function add(a, b) {
-    return a + b;
-}
-
   var i = 1
 
-  labels = []
-
-  for (i = 0; i < headers.length; i++) {
-  bin =[]
-    for (j = 0; j <buildings.length; j++){
-      bin.push(buildings[j][headers[i].hname])
-    }
-  bin = bin.reduce(add, 0)/buildings.length
-  labels.push(Math.round(bin))
-  }
-
-for (i = 0; i < headers.length; i++) {
+  while (i < 7) {
     var tile = document.createElement('div');
     tile.className = "col-lg-2 col-md-2 col-sm-2 col-xs-1";
     $('#midcard').append(tile);
     tile.id = "tile"+i;
     var tile = document.getElementById("tile"+String(i));
-    tile.innerHTML = '<div class="row" id="level1" style="padding-top: 0px;"> </div><div class="row" id="level2" style="padding-top: 0px;"></div><div class="row" id="level3" align="center" style="padding-top: 0px;"></div><div class="row" id="level4" align="center" style="padding-top: 0px;"></div>'
-    tile.children[1].innerHTML=numberWithCommas(labels[i]);
-    tile.children[2].innerHTML=headers[i].unit;
-    tile.children[3].innerHTML=headers[i].display_name;
-    tile.children[0].innerHTML="<a href='#'><img style='height: 70%; width: 70%; object-fit: contain' onmouseover='LightButton("+i+","+'"'+headers[i].hname+'"'+")' onmouseout='PressButtonOFF"+i+"("+'"'+headers[i].hname+'"'+")' onclick='PressButton"+i+"("+'"'+headers[i].hname+'"'+")' src='img/"+headers[i].hname+".png' id=" + "'button"+i+"',border=0/></a>";
-    if (headers[i].display_name == 'Energy') {
-      tile.children[2].innerHTML=headers[i].unit+'/m2';
+  	tile.innerHTML = '<div class="row" id="level1" style="padding-top: 0px;"> </div><div class="row" id="level2" style="padding-top: 0px;"></div><div class="row" id="level3" align="center" style="padding-top: 0px;"></div><div class="row" id="level4" align="center" style="padding-top: 0px;"></div>'
+    i++;
+  }
 
-    }
-    }
-
-
-
- //  var tile = document.getElementById("tile"+String(i));
+  var tile = document.getElementById("tile"+String(i));
 
   
-	// document.getElementById("tile1").children[1].innerHTML=numberWithCommas(scr.avgOE);
-	// document.getElementById("tile1").children[2].innerHTML="kWh/m2";
-	// document.getElementById("tile1").children[3].innerHTML=headers[0].display_name;
-	// document.getElementById("tile1").children[0].innerHTML="<a href='#'><img style='height: 70%; width: 70%; object-fit: contain' onmouseover='LightOE()' onmouseout='OffOE()' onclick='PressButton0()' src='img/OE2.png' id='button0' border=0/></a>";
+	document.getElementById("tile1").children[1].innerHTML=numberWithCommas(scr.avgOE);
+	document.getElementById("tile1").children[2].innerHTML="kWh/m2";
+	document.getElementById("tile1").children[3].innerHTML="OPERATION<br>ENERGY";
+	document.getElementById("tile1").children[0].innerHTML="<a href='#'><img style='height: 70%; width: 70%; object-fit: contain' onmouseover='LightOE()' onmouseout='OffOE()' onclick='PressOE()' src='img/OE2.png' id='oebbutton' border=0/></a>";
 
-	// document.getElementById("tile2").children[1].innerHTML=numberWithCommas(scr.avgEE);
- //  document.getElementById("tile2").children[2].innerHTML="kWh/m2";
- //  document.getElementById("tile2").children[3].innerHTML="EMBODIED<br>ENERGY(50y)";
- //  document.getElementById("tile2").children[0].innerHTML="<a href='#'><img style='height: 70%; width: 70%; object-fit: contain' onmouseover='LightEE()' onmouseout='OffEE()' onclick='PressButton1()' src='img/EE2.png' id='button1' border=0/></a>";
+	document.getElementById("tile2").children[1].innerHTML=numberWithCommas(scr.avgEE);
+  document.getElementById("tile2").children[2].innerHTML="kWh/m2";
+  document.getElementById("tile2").children[3].innerHTML="EMBODIED<br>ENERGY(50y)";
+  document.getElementById("tile2").children[0].innerHTML="<a href='#'><img style='height: 70%; width: 70%; object-fit: contain' onmouseover='LightEE()' onmouseout='OffEE()' onclick='PressEE()' src='img/EE2.png' id='eebbutton' border=0/></a>";
 
- // 	document.getElementById("tile3").children[1].innerHTML=numberWithCommas(scr.totalCO);
- //  document.getElementById("tile3").children[2].innerHTML="kgCO2/m2";
- //  document.getElementById("tile3").children[3].innerHTML="BUILDING GHG<br>EMISSIONS(50y)";
- //  document.getElementById("tile3").children[0].innerHTML="<a href='#'><img style='height: 70%; width: 70%; object-fit: contain' onmouseover='LightCO()' onmouseout='OffCO()' onclick='PressCO()' src='img/BE2.png' id='button2' border=0/></a>";
+ 	document.getElementById("tile3").children[1].innerHTML=numberWithCommas(scr.totalCO);
+  document.getElementById("tile3").children[2].innerHTML="kgCO2/m2";
+  document.getElementById("tile3").children[3].innerHTML="BUILDING GHG<br>EMISSIONS(50y)";
+  document.getElementById("tile3").children[0].innerHTML="<a href='#'><img style='height: 70%; width: 70%; object-fit: contain' onmouseover='LightCO()' onmouseout='OffCO()' onclick='PressCO()' src='img/BE2.png' id='bebbutton' border=0/></a>";
 	
-	// document.getElementById("tile4").children[1].innerHTML=scr.avgDA;
-	// document.getElementById("tile4").children[2].innerHTML="% DA";
-	// document.getElementById("tile4").children[3].innerHTML="DAYLIGHT<br>AREA";
-	// document.getElementById("tile4").children[0].innerHTML="<a href='#'><img style='height: 70%; width: 70%; object-fit: contain' onmouseover='LightDA()' onmouseout='OffDA()' onclick='PressButton3()' src='img/DA2.png' id='button3' border=0/></a>";
+	document.getElementById("tile4").children[1].innerHTML=scr.avgDA;
+	document.getElementById("tile4").children[2].innerHTML="% DA";
+	document.getElementById("tile4").children[3].innerHTML="DAYLIGHT<br>AREA";
+	document.getElementById("tile4").children[0].innerHTML="<a href='#'><img style='height: 70%; width: 70%; object-fit: contain' onmouseover='LightDA()' onmouseout='OffDA()' onclick='PressDA()' src='img/DA2.png' id='dabbutton' border=0/></a>";
 
-	// document.getElementById("tile5").children[1].innerHTML=scr.avgWS;
-	// document.getElementById("tile5").children[2].innerHTML="% WS";
-	// document.getElementById("tile5").children[3].innerHTML="WALKABILITY<br>SCORE";
-	// document.getElementById("tile5").children[0].innerHTML="<a href='#'><img style='height: 70%; width: 70%; object-fit: contain' onmouseover='LightWA()' onmouseout='OffWA()' onclick='PressButton4()' src='img/WA2.png' id='button4' border=0/></a>";
+	document.getElementById("tile5").children[1].innerHTML=scr.avgWS;
+	document.getElementById("tile5").children[2].innerHTML="% WS";
+	document.getElementById("tile5").children[3].innerHTML="WALKABILITY<br>SCORE";
+	document.getElementById("tile5").children[0].innerHTML="<a href='#'><img style='height: 70%; width: 70%; object-fit: contain' onmouseover='LightWA()' onmouseout='OffWA()' onclick='PressWA()' src='img/WA2.png' id='wabbutton' border=0/></a>";
 
 
-  // document.getElementById("tile6").children[1].innerHTML=scr.roi;
-  // document.getElementById("tile6").children[2].innerHTML="% ROI";
-  // document.getElementById("tile6").children[3].innerHTML="FINANCIAL<br>RETURN";
-  // document.getElementById("tile6").children[0].innerHTML="<a href='#'><img style='height: 70%; width: 70%; object-fit: contain' onmouseover='LightFR()' onmouseout='OffFR()' onclick='PressFR()' src='img/FR2.png' id='frbbutton' border=0/></a>";
+  document.getElementById("tile6").children[1].innerHTML=scr.roi;
+  document.getElementById("tile6").children[2].innerHTML="% ROI";
+  document.getElementById("tile6").children[3].innerHTML="FINANCIAL<br>RETURN";
+  document.getElementById("tile6").children[0].innerHTML="<a href='#'><img style='height: 70%; width: 70%; object-fit: contain' onmouseover='LightFR()' onmouseout='OffFR()' onclick='PressFR()' src='img/FR2.png' id='frbbutton' border=0/></a>";
 
 
 
@@ -4724,7 +4695,6 @@ for (i = 0; i < headers.length; i++) {
 
 
   BuildMap2();
-  midcard.style.left = (480 - (headers.length * 80)) +'px';
 
 
   //document.getElementById("topcard").css({ "font-size": "8vw" });
@@ -4781,7 +4751,7 @@ function BuildMap(data,title,units){
 
     bldprop.name = buildings[i].bname;
     bldprop.oe = buildings[i].oe;
-    bldprop.Energy = buildings[i].oe_norm;
+    bldprop.oenorm = buildings[i].oe_norm;
     bldprop.temp = buildings[i].temp;
     bldprop.ee = buildings[i].ee;
     bldprop.co = buildings[i].co;
@@ -5524,7 +5494,7 @@ function BuildBar(data,title,color,units,sort){
 
 function BuildChart(type,data,title,color,units,sort){
 	if (type == 'Map'){
-    if (data == 'Daylight' || data == 'MOWalkability'){
+    if (data == 'da' || data == 'wa'){
       BuildMap3(data,title,units);
       ToggleOffPanel();
       document.getElementById("temp_Map").className = "btn btn-default active";
@@ -5545,82 +5515,83 @@ function BuildChart(type,data,title,color,units,sort){
 
 
 
+
 function AllPressedOff() {
-  Button0Pressed = 0;
-  Button1Pressed = 0;
-  Button2Pressed = 0;
-  Button3Pressed = 0;
-  Button4Pressed = 0;
-  Button5Pressed = 0;
-  for (i =0; i < headers.length; i++){
-  document.getElementById('button'+i).src = "img/"+headers[i].hname+'.png';
-  }
+  document.getElementById('oebbutton').src = 'img/OE2.png';
+  OEpressed = 0;
+  document.getElementById('eebbutton').src = 'img/EE2.png';
+  EEpressed = 0;
+  document.getElementById('bebbutton').src = 'img/BE2.png';
+  COpressed = 0;
+  document.getElementById('dabbutton').src = 'img/DA2.png';
+  DApressed = 0;
+  document.getElementById('wabbutton').src = 'img/WA2.png';
+  WApressed = 0;
+  document.getElementById('frbbutton').src = 'img/FR2.png';
+  FRpressed = 0;
 }
 
 mode = 'home'
 
 function SetMode(input){
 	if (mode == 'home')
-		PressButton0();
+		PressOE();
 		mode = input;
-  if ((Button0Pressed + Button1Pressed + Button2Pressed + Button3Pressed + Button4Pressed + Button5Pressed) == 0)
-          PressButton0();
+  if ((OEpressed + EEpressed + COpressed + DApressed + WApressed) == 0)
+          PressOE();
           mode = input;
-	if (Button0Pressed == 1){
-		Button0Pressed = 0;
-		PressButton0(headers[0].hname);
+	if (OEpressed == 1){
+		OEpressed = 0;
+		PressOE();
 	}
-	if (Button1Pressed == 1){
-		Button1Pressed = 0;
-		PressButton1(headers[1].hname);
+	if (EEpressed == 1){
+		EEpressed = 0;
+		PressEE();
 	}
-	if (Button2Pressed == 1){
-		Button2Pressed = 0;
-		PressButton2(headers[2].hname);
+	if (COpressed == 1){
+		COpressed = 0;
+		PressCO();
 	}
-	if (Button3Pressed == 1){
-		Button3Pressed = 0;
-		PressButton3(headers[3].hname);
+	if (DApressed == 1){
+		DApressed = 0;
+		PressDA();
 	}
-	if (Button4Pressed == 1){
-		Button4Pressed = 0;
-		PressButton4(headers[4].hname);
+	if (WApressed == 1){
+		WApressed = 0;
+		PressWA();
 	}
-  if (Button5Pressed == 1){
-    Button5Pressed = 0;
-    PressButton5(headers[5].hname);
-  }
 }
 
 
-Button0Pressed = 0
 
-function PressButton0(_hName){
+OEpressed = 0
 
-	if (Button0Pressed == 0){
+function PressOE(){
+
+	if (OEpressed == 0){
 		AllPressedOff();
-		document.getElementById('button0').src = 'img/'+_hName+'_P.png';
-		Button0Pressed = 1
+		document.getElementById('oebbutton').src = 'img/PressedOE2.png';
+		OEpressed = 1
     if (mode == 'home'){
-      BuildChart('Map',_hName,'Energy Use Intensity Map',1,"kWh/m2",1);
+      BuildChart('Map','oe_norm','Energy Use Intensity Map',1,"kWh/m2",1);
     }
 		if (mode == 'Map'){
-			BuildChart('Map',_hName,'Energy Use Intensity Map',1,"kWh/m2",1);
+			BuildChart('Map','oe_norm','Energy Use Intensity Map',1,"kWh/m2",1);
 		}
 		else if (mode == 'Bar'){
 			call_oeall2(0, 1, 0, "x", "kWh/m2", 0);
       ToggleOffPanel();
       document.getElementById("bld_Data").className = "btn btn-default active";
 		}
-		else {BuildChart('Map',_hName,'Energy Use Intensity Map',1,"kWh/m2",1);
+		else {BuildChart('Map','oe_norm','Energy Use Intensity Map',1,"kWh/m2",1);
       ToggleOffPanel();
       document.getElementById("temp_Map").className = "btn btn-default active";
       SetMode('Map');
     }
 	}
 	else {
-		Button0Pressed = 0;
-		document.getElementById('button0').src = 'img/'+_hName+'.png'
+		OEpressed = 0;
+		document.getElementById('oebbutton').src = 'img/OE2.png';
 		Start_Home();
 
 	}
@@ -5628,46 +5599,39 @@ function PressButton0(_hName){
 }
 
 function LightOE() {
-    document.getElementById('button0').src = 'img/PressedOE2.png';
+    document.getElementById('oebbutton').src = 'img/PressedOE2.png';
 }
 
-
-
-function PressButtonOFF0(_hname) {
-  if (Button0Pressed < 1) {
-    document.getElementById('button0').src = "img/"+_hname+'.png';
+function OffOE() {
+  if (OEpressed < 1) {
+    document.getElementById('oebbutton').src = 'img/OE2.png';
   }
 }
 
 
-function LightButton(_i,_hname) {
-    document.getElementById('button'+_i).src = 'img/'+_hname+'_P.png';
-}
 
+EEpressed = 0
+function PressEE(){
 
-
-Button1Pressed = 0
-function PressButton1(_hName){
-
-	if (Button1Pressed == 0){
+	if (EEpressed == 0){
 		AllPressedOff();
-		document.getElementById('button1').src = 'img/'+_hName+'_P.png';
-		Button1Pressed = 1;
+		document.getElementById('eebbutton').src = 'img/PressedEE2.png';
+		EEpressed = 1;
 		if (mode == 'Map'){
-			BuildChart('Map',_hName,headers[1].display_name+" Map",1,headers[1].unit,1);
+			BuildChart('Map','ee','Embodied Energy Map',1,"kWh/m2",1);
     }
 		else if (mode == 'Bar'){
-			BuildChart('Bar',_hName,headers[1].display_name,'#b3b3b3',headers[1].unit,"no");
+			BuildChart('Bar','ee','Embodied Energy','#b3b3b3',"kWh/m2","no");
     }
-    else {BuildChart('Map',_hName,headers[1].display_name+" Map",1,headers[1].unit,1);
+    else {BuildChart('Map','ee','Embodied Energy Map',1,"kWh/m2",1);
       ToggleOffPanel();
       document.getElementById("temp_Map").className = "btn btn-default active";
       SetMode('Map');
     }
 	}
 	else {
-		Button1Pressed = 0;
-		document.getElementById('button1').src = 'img/'+_hName+'.png';
+		EEpressed = 0;
+		document.getElementById('eebbutton').src = 'img/EE2.png';
 		Start_Home();
 
 	}
@@ -5675,39 +5639,37 @@ function PressButton1(_hName){
 }
 
 function LightEE() {
-    document.getElementById('button1').src = 'img/PressedEE2.png';
+    document.getElementById('eebbutton').src = 'img/PressedEE2.png';
 }
 
-
-
-function PressButtonOFF1(_hName) {
-  if (Button1Pressed < 1) {
-    document.getElementById('button1').src = "img/"+_hName+'.png';
+function OffEE() {
+  if (EEpressed < 1) {
+    document.getElementById('eebbutton').src = 'img/EE2.png';
   }
 }
 
-Button2Pressed = 0
-function PressButton2(_hName){
+COpressed = 0
+function PressCO(){
 
-	if (Button2Pressed == 0){
+	if (COpressed == 0){
 		AllPressedOff();
-		document.getElementById('button2').src = "img/"+_hName+'_P.png';
-		Button2Pressed = 1
+		document.getElementById('bebbutton').src = 'img/PressedBE2.png';
+		COpressed = 1
 		if (mode == 'Map'){
-			BuildChart('Map',_hName,headers[2].display_name+" Map",1,headers[2].unit,1);
+			BuildChart('Map','co','Building GHG Map',1,"kgCO2/m2",1);
     }
 		else if (mode == 'Bar'){
-			BuildChart('Bar',_hName,headers[2].display_name,'#4169E1',headers[2].unit,"no")
+			BuildChart('Bar','co','Building GHG','#4169E1',"kgCO2/m2","no")
     }
-    else {BuildChart('Map',_hName,headers[2].display_name+" Map",1,headers[2].unit,1);
+    else {BuildChart('Map','co','Building GHG Map',1,"kgCO2/m2",1);
       ToggleOffPanel();
       document.getElementById("temp_Map").className = "btn btn-default active";
       SetMode('Map');
     }
 	}
 	else {
-		Button2Pressed = 0;
-		document.getElementById('button2').src = "img/"+_hName+'.png';
+		COpressed = 0;
+		document.getElementById('bebbutton').src = 'img/BE2.png';
 		Start_Home();
 
 	}
@@ -5715,32 +5677,31 @@ function PressButton2(_hName){
 }
 
 function LightCO() {
-    document.getElementById('button2').src = 'img/PressedBE2.png';
+    document.getElementById('bebbutton').src = 'img/PressedBE2.png';
 }
 
-
-function PressButtonOFF2(_hname) {
-  if (Button1Pressed < 1) {
-    document.getElementById('button2').src = "img/"+_hname+'.png';
+function OffCO() {
+  if (COpressed < 1) {
+    document.getElementById('bebbutton').src = 'img/BE2.png';
   }
 }
 
 
 
-Button3Pressed = 0
-function PressButton3(_hName){
+DApressed = 0
+function PressDA(){
 
-  if (Button3Pressed == 0){
+  if (DApressed == 0){
     AllPressedOff();
-    document.getElementById('button3').src = 'img/'+_hName+'_P.png';
-    Button3Pressed = 1
+    document.getElementById('dabbutton').src = 'img/PressedDA2.png';
+    DApressed = 1
     if (mode == 'Map'){
-      BuildChart('Map',_hName,headers[3].display_name+" Map",1,headers[3].unit,1);
+      BuildChart('Map','da','Daylight Autonomy Map',1,"% DA",1);
     }
     else if (mode == 'Bar'){
-      BuildChart('Bar',_hName,headers[3].display_name,'#ffc128',headers[3].unit,"no")
+      BuildChart('Bar','da','Building Daylight','#ffc128','% DA',"no")
     }
-    else {BuildChart('Map',_hName,headers[3].display_name+" Map",1,headers[3].unit,1);
+    else {BuildChart('Map','da','Building Daylight',1,'% DA',1);
       ToggleOffPanel();
       document.getElementById("temp_Map").className = "btn btn-default active";
       SetMode('Map');
@@ -5748,9 +5709,9 @@ function PressButton3(_hName){
 
   }
   else {
-    Button3Pressed = 0;
+    DApressed = 0;
     AllPressedOff();
-    document.getElementById('button3').src = 'img/'+_hName+'.png';
+    document.getElementById('dabbutton').src = 'img/DA2.png';
     Start_Home();
 
   }
@@ -5758,39 +5719,40 @@ function PressButton3(_hName){
 }
 
 function LightDA() {
-    document.getElementById('button3').src = 'img/PressedDA2.png';
+    document.getElementById('dabbutton').src = 'img/PressedDA2.png';
 }
 
-function PressButtonOFF3(_hname) {
-  if (Button1Pressed < 1) {
-    document.getElementById('button3').src = "img/"+_hname+'.png';
+function OffDA() {
+  if (DApressed < 1) {
+    document.getElementById('dabbutton').src = 'img/DA2.png';
   }
 }
 
 
-Button4Pressed = 0
-function PressButton4(_hName){
 
-  if (Button4Pressed == 0){
+WApressed = 0
+function PressWA(){
+
+  if (WApressed == 0){
     AllPressedOff();
-    document.getElementById('button4').src = 'img/'+_hName+'_P.png';
-    Button4Pressed = 1
+    document.getElementById('wabbutton').src = 'img/PressedWA2.png';
+    WApressed = 1
     if (mode == 'Map'){
-      BuildChart('Map',_hName,headers[4].display_name+ " Map",1,headers[4].unit,1);
+      BuildChart('Map','wa','Walk Score Map',1,"WS",1);
     }
     else if (mode == 'Bar'){
-      BuildChart('Bar',_hName,headers[4].display_name,'#25b5ab',headers[4].unit,"no")
+      BuildChart('Bar','wa','Walk Score','#25b5ab','WS',"no")
     }
-    else {BuildChart('Map',_hName,headers[4].display_name,1,headers[4].unit,1);
+    else {BuildChart('Map','wa','Walk Score',1,"WS",1);
       ToggleOffPanel();
       document.getElementById("temp_Map").className = "btn btn-default active";
       SetMode('Map');
     }
   }
   else {
-    Button4Pressed = 0;
+    WApressed = 0;
     AllPressedOff();
-    document.getElementById('button4').src = 'img/'+_hName+'.png';
+    document.getElementById('wabbutton').src = 'img/WA2.png';
     Start_Home();
 
   }
@@ -5798,66 +5760,47 @@ function PressButton4(_hName){
 }
 
 function LightWA() {
-    document.getElementById('button4').src = 'img/PressedWA2.png';
+    document.getElementById('wabbutton').src = 'img/PressedWA2.png';
 }
 
 function OffWA() {
-  if (Button4Pressed < 1) {
-    document.getElementById('button4').src = 'img/WA2.png';
+  if (WApressed < 1) {
+    document.getElementById('wabbutton').src = 'img/WA2.png';
   }
 }
 
-function PressButtonOFF4(_hname) {
-  if (Button1Pressed < 1) {
-    document.getElementById('button4').src = "img/"+_hname+'.png';
-  }
-}
+FRpressed = 0
+function PressFR(){
 
-Button5Pressed = 0
-
-function PressButton5(_hName){
-
-  if (Button5Pressed == 0){
+  if (FRpressed == 0){
     AllPressedOff();
-    document.getElementById('button4').src = 'img/'+_hName+'_P.png';
-    Button5Pressed = 1
-    if (mode == 'Map'){
-      BuildChart('Map',_hName,headers[5].display_name,1,headers[5].unit,1);
-    }
-    else if (mode == 'Bar'){
-      BuildChart('Bar',_hName,headers[5].display_name,'#25b5ab',headers[5].unit,"no")
-    }
-    else {BuildChart('Map',_hName,headers[5].display_name,1,headers[5].unit,1);
-      ToggleOffPanel();
-      document.getElementById("temp_Map").className = "btn btn-default active";
-      SetMode('Map');
-    }
+    document.getElementById('frbbutton').src = 'img/PressedFR2.png';
+    FRpressed = 1
+    if (mode == 'Map')
+      BuildChart('Map','fr','ROI Score Map',1,"$",1);
+    else if (mode == 'Bar')
+      BuildChart('Bar','fr','ROI Score','#25b5ab','FR',"no")
   }
   else {
-    Button5Pressed = 0;
+    FRpressed = 0;
     AllPressedOff();
-    document.getElementById('button4').src = 'img/'+_hName+'.png';
+    document.getElementById('frbbutton').src = 'img/FR2.png';
     Start_Home();
 
   }
  
 }
 
-function LightWA() {
-    document.getElementById('button4').src = 'img/PressedWA2.png';
+function LightFR() {
+    document.getElementById('frbbutton').src = 'img/PressedFR2.png';
 }
 
-function OffWA() {
-  if (Button4Pressed < 1) {
-    document.getElementById('button4').src = 'img/WA2.png';
+function OffFR() {
+  if (FRpressed < 1) {
+    document.getElementById('frbbutton').src = 'img/FR2.png';
   }
 }
 
-function PressButtonOFF5(_hname) {
-  if (Button1Pressed < 1) {
-    document.getElementById('button4').src = "img/"+_hname+'.png';
-  }
-}
 
 function Start_Chart3_Buildings(){
 
@@ -5909,11 +5852,6 @@ function Start_Chart3_Buildings(){
     submit_scatter();
 }
 
-function PressButtonOFF5(_hname) {
-  if (Button1Pressed < 1) {
-    document.getElementById('button5').src = "img/"+_hname+'.png';
-  }
-}
 
 //submit scatter function
 function submit_scatter() {

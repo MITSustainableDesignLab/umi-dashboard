@@ -72,6 +72,51 @@ var example_json =
         "60"
       ],
       "nlevels": "4"
+    },
+    {
+      "type": "single_value",
+      "display_name": "Daylight",
+      "name": "DaylitArea",
+      "unit": "%",
+      "range": [
+        "0",
+        "100"
+      ],
+      "description": [
+        "D1",
+        "D2",
+        "D3"
+      ],
+      "levels": [
+        "20",
+        "40"
+      ],
+      "nlevels": "3"
+    },
+    {
+      "type": "single_value",
+      "display_name": "Lifecycle",
+      "name": "LCEnergy",
+      "unit": "kWh",
+      "range": [
+        "0",
+        "1000000"
+      ],
+      "description": [
+        "LL1",
+        "L2",
+        "L3",
+        "L4",
+        "L5"
+      ],
+      "levels": [
+        "5000",
+        "10000",
+        "50000",
+        "100000",
+        "500000"
+      ],
+      "nlevels": "5"
     }
   ],
   "features": [
