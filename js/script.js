@@ -6645,7 +6645,6 @@ function MakeBarByTemplate(_metric){
   var entry = []
 
   for (i=0; i < data.siteUseType.length; i++){
-    console.log(i);
     entry.push({
       name: data.siteUseType[i],
       y: site['UseType'+_metric][i],
@@ -6674,8 +6673,6 @@ function MakeBarByTemplate(_metric){
     });
   };
 
-  console.log(series);
-  console.log(drilldown);
   
   $('#scoremap').highcharts({
     chart: {
