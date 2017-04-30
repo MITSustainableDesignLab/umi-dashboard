@@ -676,7 +676,7 @@ function BuildList2(data) {
     // set missing values to NULL instead of UNDEFINED, otherwise Highcharts messes up spider chart
     bld.MOWalkability = data.features[i].properties.MOWalkability || null;
     bld.MOBikeability = data.features[i].properties.MOBikeability || null;
-    bld.DaylitArea = (data.features[i].properties.DaylitArea*100) || null;
+    bld.DaylitArea = (data.features[i].properties.DaylitArea) || null;
 
     //------------------- Dynamic--------------------
     // CAUTION: Life Cycle is devided by Life Cycle Length overhere!
@@ -4590,7 +4590,7 @@ function Start_Home(index) {
   map.id = "scoremap";
   $('#banner').append(map);
 
-  var stats = document.createElement('div');
+  stats = document.createElement('div');
   stats.className = "col-lg-3 col-md-3 col-sm-4 col-xs-4";
   stats.style.marginTop = "-50px";
   $('#banner').append(stats);
@@ -5002,7 +5002,7 @@ function BuildMap2(data,title,units){
     this.color;
   }
 
-  colorlist = ['#4d8eff','#f04591','#fdc22e','#25b5ab','#8c8c8c','#8085e9','#dd87dd']
+  colorlist = ['#f04591','#fdc22e','#25b5ab','#4d8eff','#8c8c8c','#8085e9','#dd87dd']
   building_array = new bldGeoArray();
 
   building_array.type = "FeatureCollection";
@@ -5560,6 +5560,8 @@ function AllPressedOff() {
 mode = 'home'
 
 function SetMode(input){
+  $("#newbutton").remove();
+
 	if (mode == 'home')
 		PressButton0();
 		mode = input;
@@ -5596,31 +5598,35 @@ function SetMode(input){
 Button0Pressed = 0
 
 function PressButton0(_hName){
-
 	if (Button0Pressed == 0){
 		AllPressedOff();
 		document.getElementById('button0').src = 'img/'+_hName+'_P.png';
 		Button0Pressed = 1
-    if (mode == 'home'){
-      BuildChart('Map',_hName,'Energy Use Intensity Map',1,"kWh/m2",1);
-    }
+		
+		if (mode == 'home'){
+			BuildChart('Map',_hName,'Energy Use Intensity Map',1,"kWh/m2",1);
+		}
+		
 		if (mode == 'Map'){
 			BuildChart('Map',_hName,'Energy Use Intensity Map',1,"kWh/m2",1);
 		}
-		else if (mode == 'Bar'){
-			call_oeall2(0, 1, 0, "x", "kWh/m2", 0);
-      ToggleOffPanel();
-      document.getElementById("bld_Data").className = "btn btn-default active";
+		
+		else if (mode == 'data'){
+			MakeBarByTemplate(_hName);
+			ToggleOffPanel();
+			document.getElementById("bld_Data").className = "btn btn-default active";
 		}
+
 		else {BuildChart('Map',_hName,'Energy Use Intensity Map',1,"kWh/m2",1);
-      ToggleOffPanel();
-      document.getElementById("temp_Map").className = "btn btn-default active";
-      SetMode('Map');
-    }
+		ToggleOffPanel();
+		document.getElementById("temp_Map").className = "btn btn-default active";
+		SetMode('Map');
+		}
 	}
 	else {
 		Button0Pressed = 0;
 		document.getElementById('button0').src = 'img/'+_hName+'.png'
+		if (mode == 'data'){ MakeBarByTemplate(_hName)}
 		Start_Home();
 
 	}
@@ -5655,15 +5661,15 @@ function PressButton1(_hName){
 		Button1Pressed = 1;
 		if (mode == 'Map'){
 			BuildChart('Map',_hName,headers[1].display_name+" Map",1,headers[1].unit,1);
-    }
-		else if (mode == 'Bar'){
-			BuildChart('Bar',_hName,headers[1].display_name,'#b3b3b3',headers[1].unit,"no");
-    }
-    else {BuildChart('Map',_hName,headers[1].display_name+" Map",1,headers[1].unit,1);
-      ToggleOffPanel();
-      document.getElementById("temp_Map").className = "btn btn-default active";
-      SetMode('Map');
-    }
+		}
+		else if (mode == 'data'){
+			MakeBarByTemplate(_hName);
+		}
+    	else {BuildChart('Map',_hName,headers[1].display_name+" Map",1,headers[1].unit,1);
+      	ToggleOffPanel();
+      	document.getElementById("temp_Map").className = "btn btn-default active";
+      	SetMode('Map');
+    	}
 	}
 	else {
 		Button1Pressed = 0;
@@ -5696,9 +5702,9 @@ function PressButton2(_hName){
 		if (mode == 'Map'){
 			BuildChart('Map',_hName,headers[2].display_name+" Map",1,headers[2].unit,1);
     }
-		else if (mode == 'Bar'){
-			BuildChart('Bar',_hName,headers[2].display_name,'#4169E1',headers[2].unit,"no")
-    }
+		else if (mode == 'data'){
+			MakeBarByTemplate(_hName);
+		}
     else {BuildChart('Map',_hName,headers[2].display_name+" Map",1,headers[2].unit,1);
       ToggleOffPanel();
       document.getElementById("temp_Map").className = "btn btn-default active";
@@ -5737,9 +5743,9 @@ function PressButton3(_hName){
     if (mode == 'Map'){
       BuildChart('Map',_hName,headers[3].display_name+" Map",1,headers[3].unit,1);
     }
-    else if (mode == 'Bar'){
-      BuildChart('Bar',_hName,headers[3].display_name,'#ffc128',headers[3].unit,"no")
-    }
+		else if (mode == 'data'){
+			MakeBarByTemplate(_hName);
+		}
     else {BuildChart('Map',_hName,headers[3].display_name+" Map",1,headers[3].unit,1);
       ToggleOffPanel();
       document.getElementById("temp_Map").className = "btn btn-default active";
@@ -5778,9 +5784,9 @@ function PressButton4(_hName){
     if (mode == 'Map'){
       BuildChart('Map',_hName,headers[4].display_name+ " Map",1,headers[4].unit,1);
     }
-    else if (mode == 'Bar'){
-      BuildChart('Bar',_hName,headers[4].display_name,'#25b5ab',headers[4].unit,"no")
-    }
+		else if (mode == 'data'){
+			MakeBarByTemplate(_hName);
+		}
     else {BuildChart('Map',_hName,headers[4].display_name,1,headers[4].unit,1);
       ToggleOffPanel();
       document.getElementById("temp_Map").className = "btn btn-default active";
@@ -5824,9 +5830,9 @@ function PressButton5(_hName){
     if (mode == 'Map'){
       BuildChart('Map',_hName,headers[5].display_name,1,headers[5].unit,1);
     }
-    else if (mode == 'Bar'){
-      BuildChart('Bar',_hName,headers[5].display_name,'#25b5ab',headers[5].unit,"no")
-    }
+		else if (mode == 'data'){
+			MakeBarByTemplate(_hName);
+		}
     else {BuildChart('Map',_hName,headers[5].display_name,1,headers[5].unit,1);
       ToggleOffPanel();
       document.getElementById("temp_Map").className = "btn btn-default active";
@@ -6629,16 +6635,65 @@ function MakeMetric(_data,_metric){
 };
 
 function SetMode2(input){
+	mode = 'data';
   for (i= 0; i < headers.length; i++){
     MakeMetric(data,headers[i].hname)
   }
   MillTemplates(data);
   MakeBarByTemplate('Energy')
 //MakeBarByTemplate();
-}
+	if (Button0Pressed == 1){
+	Button0Pressed = 0;
+	PressButton0(headers[0].hname);
+	}
+	if (Button1Pressed == 1){
+	Button1Pressed = 0;
+	PressButton1(headers[1].hname);
+	}
+	if (Button2Pressed == 1){
+	Button2Pressed = 0;
+	PressButton2(headers[2].hname);
+	}
+	if (Button3Pressed == 1){
+	Button3Pressed = 0;
+	PressButton3(headers[3].hname);
+	}
+	if (Button4Pressed == 1){
+	Button4Pressed = 0;
+	PressButton4(headers[4].hname);
+	}
+  	if (Button5Pressed == 1){
+    Button5Pressed = 0;
+    PressButton5(headers[5].hname);
+	}
+};
 
 
 function MakeBarByTemplate(_metric){
+
+    if ($("#newbutton") != null){
+      $("#newbutton").remove();
+    }
+
+    var btn = document.createElement("BUTTON");        // Create a <button> element
+    var t = document.createTextNode("Display New Chart"); 
+    btn.id = 'newbutton' ;
+    btn.setAttribute( "onClick", "call_oeall2(0, 1, 1, 'x', 'kWh/m2', 0)" );
+    btn.appendChild(t);                                // Append the text to <button>
+    stats.appendChild(btn); 
+
+
+
+  colorlist = ['#f04591','#fdc22e','#25b5ab','#4d8eff','#8c8c8c','#8085e9','#dd87dd']
+  var title = ''
+  var unit = ''
+  for (i=0; i < headers.length; i++){
+    if (headers[i].hname == _metric){
+      title = headers[i].display_name;
+      unit = headers[i].unit; 
+      color = colorlist[i];
+    }
+  }
 
   var series = [];
   var drilldown = [];
@@ -6647,13 +6702,13 @@ function MakeBarByTemplate(_metric){
   for (i=0; i < data.siteUseType.length; i++){
     entry.push({
       name: data.siteUseType[i],
-      y: site['UseType'+_metric][i],
+      y: data['UseType'+_metric][i],
       drilldown: data.siteUseType[i]
     })
   }
 
   series.name = _metric;
-  series.colorByPoint = true;
+  series.colorByPoint = false;
   series.data = entry;
 
   for (i=0; i < data.siteUseType.length; i++){
@@ -6679,36 +6734,47 @@ function MakeBarByTemplate(_metric){
         type: 'column'
     },
     title: {
-        text: 'Browser market shares. January, 2015 to May, 2015'
+        text: title + ' By Use Type'
     },
     subtitle: {
-        text: 'Click the columns to view versions. Source: <a href="http://netmarketshare.com">netmarketshare.com</a>.'
+        text: 'Click the columns to view each building'
     },
     xAxis: {
-        type: 'category'
+        type: 'category',
+        title: {
+            text: 'Buildings'
+        }
     },
     yAxis: {
         title: {
-            text: 'Total percent market share'
+            text: 'Total' + unit
         }
 
     },
     legend: {
         enabled: false
     },
+
+
+    credits: {
+        enabled: false
+    },
+
+
     plotOptions: {
         series: {
+            color: color,
             borderWidth: 0,
             dataLabels: {
                 enabled: true,
-                format: '{point.y:.1f}%'
+                format: '{point.y:.1f}'
             }
         }
     },
 
     tooltip: {
         headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
+        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}</b> '+unit+'<br/>'
     },
 
     series: [series],

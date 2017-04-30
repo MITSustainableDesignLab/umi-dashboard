@@ -435,7 +435,7 @@ function MillSource(_project){
         var building = site.features[j].properties;
 
         building["OEYear"] = Math.round(building.OETotal.reduce((a, b) => a + b, 0));
-        building["DaylitArea"] = building["DaylitArea"]*100
+        building["DaylitArea"] = building["DaylitArea"]*10;
         building["Energy"] = Math.round(building["OEYear"]/building.GrossFloorArea);
         building["DaylitArea"] = Math.round(building["DaylitArea"])
         building["GrossFloorArea"] = Math.round(building["GrossFloorArea"])
