@@ -2,6 +2,10 @@ body {
     padding-top: 50px;
 }
 
+#midcard {
+    position: relative;
+}
+
 
 #introModal h2 {
     font-size:20px;
